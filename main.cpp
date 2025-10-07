@@ -1,11 +1,12 @@
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-#include <chrono>
-#include <vector>
-#include <stack>
-#include <string>
-#include <iomanip>
+// #include <iostream>
+// #include <algorithm>
+// #include <cmath>
+// #include <chrono>
+// #include <vector>
+// #include <stack>
+// #include <string>
+// #include <iomanip>
+#include"bits/stdc++.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -537,118 +538,25 @@ int maximum(int arr[], int n)
     return maxVal;
 }
 
+long long binToDec(const string &bin) {
+    long long val = 0;
+    for (char c : bin) {
+        val = val * 2 + (c - '0');
+    }
+    return val;
+}
+
+string decToBin(long long n) {
+    if (n == 0) return "0";
+    string s = "";
+    while (n > 0) {
+        s = char((n % 2) + '0') + s;
+        n /= 2;
+    }
+    return s;
+}
 //--------------------------------------------------
-
 //====================================================================
-// Linked list
-// template <class T>
-// struct Node{
-//     T item;
-//     Node<T>* next;
-//     Node<T>* prev;
-// };
-// template <class T>
-// class LinkedList{
-// private:
-//     Node<T>* head;
-//     Node<T>* tail;
-//     int count;
-// public:
-//     LinkedList() : head(nullptr), tail(nullptr), count(0) {}
-//     bool is_empty() { return count == 0; }
-//     int size() { return count; }
-
-//     void insert_at_end(T value) {
-//         Node<T>* newnode = new Node<T>();
-//         newnode->item = value;
-//         if(is_empty()) {
-//             head = newnode;
-//             tail = newnode;
-//             newnode->next = nullptr;
-//         } else {
-//             newnode->next = nullptr;
-//             tail = newnode;
-//         }
-//         count++;
-//     }
-
-//     void insert_at_start(T value) {
-//         Node<T>* newnode = new Node<T>();
-//         newnode->item = value;
-//         if(is_empty()) {
-//             head = newnode;
-//             tail = newnode;
-//             newnode->next = nullptr;
-//         } else {
-//             newnode->next = head;
-//             head = newnode;
-//         }
-//         count++;
-//     }
-
-//     void insert_at_index(int index, T value) {
-//         if(index < 0 || index > count) {
-//             cout << "Index out of bounds" << endl;
-//             return;
-//         }
-//         if(index == 0) {
-//             insert_at_start(value);
-//             return;
-//         }
-//         if(index == count) {
-//             insert_at_end(value);
-//             return;
-//         }
-//         Node<T>* newnode = new Node<T>();
-//         newnode->item = value;
-//         Node<T>* current = head;
-//         for(int i = 0; i < index - 1; i++) {
-//             current = current->next;
-//         }
-//         newnode->next = current->next;
-//         current->next = newnode;
-//         count++;
-//     }
-
-//     T remove_from_end() {
-//         T value;
-//         if(is_empty()) {
-//             cout << "List is already empty" << endl;
-//             return T();
-//         }
-//         else if(count == 1){
-//             Node<T>* temp = head;
-//             value = temp->item;
-//             head = nullptr;
-//             tail = nullptr;
-//             delete temp;
-//             count--;
-//         }
-//         else{
-//             Node<T>* temp = tail;
-//             value = temp->item;
-//             Node<T>* current = head;
-//             while(current->next != tail) {
-//                 current = current->next;
-//             }
-//             tail = current;
-//             tail->next = nullptr;
-//             delete temp;
-
-//             count--;
-//         }
-//         return value;
-//     }
-//     void print() {
-//         Node<T>* current = head;
-//         while(current != nullptr) {
-//             cout << current->item << " ";
-//             current = current->next;
-//         }
-//         cout << endl;
-//     }
-// };
-
 template <class T>
 struct Node
 {
@@ -922,15 +830,7 @@ public:
 };
 
 
-
-
-
-#include <iostream>
-#include <iomanip>
-#include <chrono>
-using namespace std;
-using namespace std::chrono;
-
+//======================================================================
 // Function to print section headers
 void printHeader(const string& title) {
     cout << "\n" << string(60, '=') << endl;
@@ -940,8 +840,7 @@ void printHeader(const string& title) {
 
 // Function to print time taken
 void printTime(const string& operation, double time_ms) {
-    cout << left << setw(40) << operation 
-         << ": " << fixed << setprecision(4) << time_ms << " ms" << endl;
+    cout << left << setw(40) << operation << ": " << fixed << setprecision(4) << time_ms << " ms" << endl;
 }
 
 int main() {
