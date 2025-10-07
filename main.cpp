@@ -379,7 +379,6 @@ int binary_search(int arr[], int left, int right, int key)
     {
         return binary_search(arr, left, mid - 1, key);
     }
-    cout << "end " << endl;
     return -1;
 }
 
@@ -842,7 +841,36 @@ void printHeader(const string& title) {
 void printTime(const string& operation, double time_ms) {
     cout << left << setw(40) << operation << ": " << fixed << setprecision(4) << time_ms << " ms" << endl;
 }
+//======================================================================
 
+int power(int a, int b) {
+    if (b == 0)
+        return 1;
+
+    int half = power(a, b / 2);
+
+    if (b % 2 == 0)
+        return half * half;
+    else
+        return a * half * half;
+}
+
+// int power(int a, int b) {
+//     if (b == 0)
+//         return 1;
+//     return a * power(a, b - 1);
+// }
+
+long long power_iterative(int num , int p){
+    long long result = 1;
+    for(int i = 0; i < p; i++){
+        result *= num;
+    }
+    return result;
+}
+
+//======================================================================
+// Main function to test all implementations
 int main() {
     auto start_time = high_resolution_clock::now();
     auto end_time = high_resolution_clock::now();
@@ -1090,6 +1118,28 @@ int main() {
     elapsed = end_time - start_time;
     cout << "intToString(67890) = '" << str << "'" << endl;
     printTime("Int to String conversion", elapsed.count());
+
+
+    // ========================================
+    // test power function
+    printHeader("POWER FUNCTION");
+    cout << "Calculating power using recursion:" << endl;
+    int base = 5555;
+    int p = 10023;  
+    start_time = high_resolution_clock::now();
+    long long pow_result = power(base, p);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << base << " raised to the power of " << p << " is " << pow_result << endl;
+    printTime("Power function", elapsed.count());
+    //------------------------------------------------
+    cout << "Calculating power using iteration:" << endl;
+    start_time = high_resolution_clock::now();
+    long long pow_iterative_result = power_iterative(base, p);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
+    printTime("Power function", elapsed.count());
 
     // ========================================
     // Summary
