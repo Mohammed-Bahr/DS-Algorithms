@@ -1,11 +1,3 @@
-// #include <iostream>
-// #include <algorithm>
-// #include <cmath>
-// #include <chrono>
-// #include <vector>
-// #include <stack>
-// #include <string>
-// #include <iomanip>
 #include"bits/stdc++.h"
 using namespace std;
 using namespace std::chrono;
@@ -329,11 +321,11 @@ void shellSort(vector<int> &arr)
 
 //-----------------------------------------------
 // QuickSort
-
+// this put the pivot in its right place and put all smaller elements to left of pivot and all greater elements to right of pivot
 int partition(int arr[], int low, int high)
 {
-    int pivot = arr[high];
-    int i = low - 1;
+    int pivot = arr[high]; // here pivot is at the last index , i am telling this to avoid confusion as there is some other ways to choose pivot (like first index or middle index)
+    int i = low - 1; // start from -1 index of low
     for (int j = low; j < high; j++)
     {
         if (arr[j] < pivot)
@@ -353,6 +345,35 @@ void quickSort(int arr[], int low, int high)
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
+    }
+}
+
+
+
+int random_partition(int arr[], int low, int high)
+{
+    srand(time(0));
+    int pivot = rand() % high; // (endIndex - startIndex + 1) this is the range of random number 
+    int i = low - 1; // start from -1 index of low
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] < pivot)
+        {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void random_quickSort(int arr[], int low, int high)
+{
+    if (low < high)
+    {
+        int pi = random_partition(arr, low, high);
+        random_quickSort(arr, low, pi - 1);
+        random_quickSort(arr, pi + 1, high);
     }
 }
 
@@ -842,7 +863,7 @@ void printTime(const string& operation, double time_ms) {
     cout << left << setw(40) << operation << ": " << fixed << setprecision(4) << time_ms << " ms" << endl;
 }
 //======================================================================
-
+// power functions
 int power(int a, int b) {
     if (b == 0)
         return 1;
@@ -1039,6 +1060,15 @@ int main() {
     end_time = high_resolution_clock::now();
     elapsed = end_time - start_time;
     printTime("Quick Sort", elapsed.count());
+
+
+     // Random Quick Sort
+    for(int i = 0; i < n; i++) arr[i] = n - i;
+    start_time = high_resolution_clock::now();
+    random_quickSort(arr, 0, n - 1);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Random Quick Sort", elapsed.count());
     
     // Shell Sort
     vector<int> vec;
