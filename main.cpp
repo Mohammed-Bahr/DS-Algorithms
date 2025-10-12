@@ -179,23 +179,28 @@ public:
 
 // PrintArray
 ofstream outFile("output.txt");
-void printArray(int arr[], int n, const string& s)
+void printArray(int arr[], int n, const string &s)
 {
-    
-    
-    if (!outFile.is_open()) {
+
+    if (!outFile.is_open())
+    {
         cout << "Error: Could not open output.txt" << endl;
         return;
     }
-    
+
     outFile << s << " -> ";
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         outFile << arr[i] << " ";
-        if ((i + 1) % 20 == 0) {
+        if ((i + 1) % 20 == 0)
+        {
             outFile << "\n";
         }
     }
-    outFile << "\n\n";
+    if (s != "Original Array")
+    {
+        outFile << "\n\n";
+    }
 }
 //--------------------------------------------------
 // selection sort
@@ -216,7 +221,7 @@ void Selection_Sort(T arr[], const int n)
         swap(arr[i], arr[m]);
     }
     string s = "selectionSort";
-    printArray(arr ,n ,s);
+    printArray(arr, n, s);
 }
 
 // ---------------------------------------
@@ -239,7 +244,7 @@ void bubbleSort(int arr[], const int n)
             break;
     }
     string s = "bubbleSort";
-    printArray(arr ,n ,s);
+    printArray(arr, n, s);
 }
 
 // ---------------------------------------
@@ -261,7 +266,7 @@ void insertionSort(int arr[], const int n)
         arr[j + 1] = key;
     }
     string s = "insertionSort";
-    printArray(arr ,n ,s);
+    printArray(arr, n, s);
 }
 
 // ---------------------------------------
@@ -312,7 +317,7 @@ void merge(int arr[], int left, int mid, int right)
         j++;
         k++;
     }
-    
+
     delete[] L;
     delete[] R;
 }
@@ -337,7 +342,7 @@ void mergeSort(int arr[], int left, int right)
 
 void shellSort(int arr[], const int n)
 {
-  
+
     for (int gap = n / 2; gap > 0; gap /= 2)
     {
         for (int i = gap; i < n; i++)
@@ -354,9 +359,8 @@ void shellSort(int arr[], const int n)
         }
     }
 
-
     string s = "shellSort";
-    printArray(arr , n ,s);
+    printArray(arr, n, s);
 }
 
 //-----------------------------------------------
@@ -383,10 +387,9 @@ void quickSort(int arr[], int low, int high)
     if (low < high)
     {
         int pi = partition(arr, low, high);
-        quickSort(arr, low, pi - 1 );
-        quickSort(arr, pi + 1, high );
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
     }
-    
 }
 
 //-----------------------------------------------
@@ -396,19 +399,17 @@ int random_partition(int arr[], int low, int high)
     // Generate random index between low and high
     int randomIndex = low + rand() % (high - low + 1);
     swap(arr[randomIndex], arr[high]); // Move random pivot to end
-    return partition(arr, low, high); // Use existing partition function
+    return partition(arr, low, high);  // Use existing partition function
 }
 static int counter_for_printing = 0;
-void random_quickSort(int arr[], int low, int high )
+void random_quickSort(int arr[], int low, int high)
 {
     if (low < high)
     {
         int pi = random_partition(arr, low, high);
-        random_quickSort(arr, low, pi - 1 );
-        random_quickSort(arr, pi + 1, high );
+        random_quickSort(arr, low, pi - 1);
+        random_quickSort(arr, pi + 1, high);
     }
-    
-    
 }
 
 ////======================================================================
@@ -436,7 +437,6 @@ int binary_search(const int arr[], int left, int right, const int key)
     }
     return -1;
 }
-
 
 //======================================================================
 // Balanced Parentheses Check using Stack
@@ -504,11 +504,10 @@ void heapSort(int arr[], const int n)
         swap(arr[0], arr[i]);
         heapify(arr, i, 0);
     }
-    
+
     string s = "heapSort";
     printArray(arr, n, s);
 }
-
 
 //===========================================================
 // Counting Sort
@@ -546,7 +545,7 @@ void CountingSort(int arr[], const int n)
     {
         arr[i] = res[i];
     }
-    
+
     string s = "CountingSort";
     printArray(arr, n, s);
 }
@@ -554,6 +553,68 @@ void CountingSort(int arr[], const int n)
 ////===========================================================
 // radix Sort
 
+// A utility function to get maximum
+// value in arr[]
+int getMax(int arr[], int n)
+{
+    int mx = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > mx)
+            mx = arr[i];
+    return mx;
+}
+
+// A function to do counting sort of arr[]
+// according to the digit
+// represented by exp.
+void countSort(int arr[], int n, int exp)
+{
+
+    // Output array
+    int output[n];
+    int i, count[10] = {0};
+
+    // Store count of occurrences
+    // in count[]
+    for (i = 0; i < n; i++)
+        count[(arr[i] / exp) % 10]++;
+
+    // Change count[i] so that count[i]
+    // now contains actual position
+    // of this digit in output[]
+    for (i = 1; i < 10; i++)
+        count[i] += count[i - 1];
+
+    // Build the output array
+    for (i = n - 1; i >= 0; i--)
+    {
+        output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+        count[(arr[i] / exp) % 10]--;
+    }
+
+    // Copy the output array to arr[],
+    // so that arr[] now contains sorted
+    // numbers according to current digit
+    for (i = 0; i < n; i++)
+        arr[i] = output[i];
+}
+
+// The main function to that sorts arr[]
+// of size n using Radix Sort
+void radixsort(int arr[], int n)
+{
+
+    // Find the maximum number to
+    // know number of digits
+    int m = getMax(arr, n);
+
+    // Do counting sort for every digit.
+    // Note that instead of passing digit
+    // number, exp is passed. exp is 10^i
+    // where i is current digit number
+    for (int exp = 1; m / exp > 0; exp *= 10)
+        countSort(arr, n, exp);
+}
 // ============================================================
 // Important Functions : ->
 
@@ -719,7 +780,7 @@ private:
             j++;
             k++;
         }
-        
+
         delete[] L;
         delete[] R;
     }
@@ -948,7 +1009,7 @@ void printHeader(const string &title)
     cout << string(60, '=') << endl;
 }
 
-void printHeader_for_sorting(const string &title , int n)
+void printHeader_for_sorting(const string &title, int n)
 {
     cout << "\n"
          << string(60, '=') << endl;
@@ -978,14 +1039,18 @@ int power(int a, int b)
 
 long long power_iterative(int num, int p)
 {
-    if (p == 0) return 1;
-    if (p < 0) return 0; // Handle negative exponents
-    
+    if (p == 0)
+        return 1;
+    if (p < 0)
+        return 0; // Handle negative exponents
+
     long long result = 1;
     long long base = num;
-    
-    while (p > 0) {
-        if (p & 1) { // If p is odd
+
+    while (p > 0)
+    {
+        if (p & 1)
+        { // If p is odd
             result *= base;
         }
         base *= base;
@@ -1000,7 +1065,7 @@ int main()
 {
     // Initialize random seed for consistent results
     srand(static_cast<unsigned>(time(nullptr)));
-    
+
     auto start_time = high_resolution_clock::now();
     auto end_time = high_resolution_clock::now();
     duration<double, milli> elapsed;
@@ -1136,9 +1201,9 @@ int main()
     // Test Sorting Algorithms
     // ========================================
     {
-        ofstream outFile ("output.txt" , ios::app);
+        ofstream outFile("output.txt", ios::app);
         const int n = 20;
-        printHeader_for_sorting("SORTING ALGORITHMS of -> " , n);
+        printHeader_for_sorting("SORTING ALGORITHMS of -> ", n);
         int arr[n];
         // const int n = sizeof(arr) / sizeof(arr[0]);
         int size = n;
@@ -1157,10 +1222,11 @@ int main()
         int arr8[n];
         int arr4[n];
         int arr9[n];
+        int arr10[n];
 
-        
         // Selection Sort
         memcpy(arr1, arr, sizeof(arr));
+        printArray(arr1, n, "Original Array");
         start_time = high_resolution_clock::now();
         Selection_Sort(arr1, n);
         end_time = high_resolution_clock::now();
@@ -1169,6 +1235,7 @@ int main()
 
         // Bubble Sort
         memcpy(arr2, arr, sizeof(arr));
+        printArray(arr2, n, "Original Array");
         start_time = high_resolution_clock::now();
         bubbleSort(arr2, n);
         end_time = high_resolution_clock::now();
@@ -1177,6 +1244,7 @@ int main()
 
         // Insertion Sort
         memcpy(arr3, arr, sizeof(arr));
+        printArray(arr3, n, "Original Array");
         start_time = high_resolution_clock::now();
         insertionSort(arr3, n);
         end_time = high_resolution_clock::now();
@@ -1185,36 +1253,40 @@ int main()
 
         // Merge Sort
         memcpy(arr4, arr, sizeof(arr));
+        printArray(arr4, n, "Original Array");
         start_time = high_resolution_clock::now();
         mergeSort(arr4, 0, n - 1);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
         printTime("Merge Sort", elapsed.count());
         string s_merge = "mergeSort";
-        printArray(arr4 , n , s_merge);
+        printArray(arr4, n, s_merge);
 
         // Quick Sort
         memcpy(arr5, arr, sizeof(arr));
+        printArray(arr5, n, "Original Array");
         start_time = high_resolution_clock::now();
-        quickSort(arr5, 0, n - 1 );
+        quickSort(arr5, 0, n - 1);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
         printTime("Quick Sort", elapsed.count());
         string s_quick = "quickSort";
-        printArray(arr5 , n , s_quick);
+        printArray(arr5, n, s_quick);
 
         // Random Quick Sort
         memcpy(arr6, arr, sizeof(arr));
+        printArray(arr6, n, "Original Array");
         start_time = high_resolution_clock::now();
-        random_quickSort(arr6, 0, n - 1 );
+        random_quickSort(arr6, 0, n - 1);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
         printTime("Random Quick Sort", elapsed.count());
         string s_random_quick = "random_quickSort";
-        printArray(arr6 , n , s_random_quick);
+        printArray(arr6, n, s_random_quick);
 
         // Shell Sort
         memcpy(arr7, arr, sizeof(arr));
+        printArray(arr7, n, "Original Array");
         start_time = high_resolution_clock::now();
         shellSort(arr7, n);
         end_time = high_resolution_clock::now();
@@ -1223,6 +1295,7 @@ int main()
 
         // Heap Sort
         memcpy(arr8, arr, sizeof(arr));
+        printArray(arr8, n, "Original Array");
         start_time = high_resolution_clock::now();
         heapSort(arr8, n);
         end_time = high_resolution_clock::now();
@@ -1231,13 +1304,26 @@ int main()
 
         // Counting Sort
         memcpy(arr9, arr, sizeof(arr));
+        printArray(arr9, n, "Original Array");
         start_time = high_resolution_clock::now();
         CountingSort(arr9, n);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
         printTime("Counting Sort", elapsed.count());
+        cout << endl;
 
-        //closing the output file of sorting algorithms
+        // Radix Sort
+        memcpy(arr10, arr, sizeof(arr));
+        printArray(arr10, n, "Original Array");
+        start_time = high_resolution_clock::now();
+        CountingSort(arr10, n);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        printTime("Radix Sort", elapsed.count());
+        string s_radix = "radixSort";
+        printArray(arr6, n, s_radix);
+
+        // closing the output file of sorting algorithms
         outFile.close();
 
         // ========================================
@@ -1312,7 +1398,7 @@ int main()
     elapsed = end_time - start_time;
     cout << base << " raised to the power of " << p << " is " << pow_result << endl;
     printTime("Recursive Power", elapsed.count());
-    
+
     cout << "Calculating power using iterative method:" << endl;
     start_time = high_resolution_clock::now();
     long long pow_iterative_result = power_iterative(base, p);

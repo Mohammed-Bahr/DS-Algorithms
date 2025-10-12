@@ -3,6 +3,7 @@
         "*.ejs": "html",
         "chrono": "cpp",
         "iostream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "cstring": "cpp"
     }
 }
