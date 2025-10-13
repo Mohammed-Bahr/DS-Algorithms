@@ -615,6 +615,8 @@ void radixsort(int arr[], int n)
     for (int exp = 1; m / exp > 0; exp *= 10)
         countSort(arr, n, exp);
 }
+
+
 // ============================================================
 // Important Functions : ->
 
@@ -999,6 +1001,166 @@ public:
     }
 };
 
+//============================================================
+// Hashing algorithm using replacement method
+
+template <class H> 
+class Hashing
+{
+private:
+    const int TableSize;
+    vector<int> hashTable;
+    vector<LinkedList<H>> chainTable; 
+
+    int hashFunction(int key)
+    {
+        return key % TableSize;
+    }
+
+public:
+    Hashing(int size) : TableSize(size) , hashTable(TableSize, -1), chainTable(TableSize) {}
+
+    void insertByReplacement(int key)
+    {
+        int idx = hashFunction(key);
+        hashTable[idx] = key;
+
+        // if (hashTable[idx] == -1)
+        // {
+        //     hashTable[idx] = key;
+        //     return;
+        // }
+
+        // if (hashTable[idx] == key)
+        //     return;
+
+        // int existing = hashTable[idx];
+        // int existingHome = hashFunction(existing);
+
+        // if (existingHome != idx)
+        // {
+        //     // Replace and reinsert the evicted element using linear probing
+        //     hashTable[idx] = key;
+        //     int pos = idx;
+        //     for (int i = 1; i < TableSize; ++i)
+        //     {
+        //         pos = (idx + i) % TableSize;
+        //         if (hashTable[pos] == -1)
+        //         {
+        //             hashTable[pos] = existing;
+        //             return;
+        //         }
+        //     }
+        //     // table full: drop evicted element (or handle as desired)
+        // }
+        // else
+        // {
+        //     // Existing element belongs here; insert key using linear probing
+        //     int pos = idx;
+        //     for (int i = 1; i < TableSize; ++i)
+        //     {
+        //         pos = (idx + i) % TableSize;
+        //         if (hashTable[pos] == -1)
+        //         {
+        //             hashTable[pos] = key;
+        //             return;
+        //         }
+        //     }
+        //     // table full
+        // }
+    }
+
+    void insert_Linear_Probing(int key)
+    {
+        int idx = hashFunction(key);
+        if (hashTable[idx] == -1)
+        {
+            hashTable[idx] = key;
+            return;
+        }
+        else if (hashTable[idx] == key)
+            return;
+        else
+        {
+            for (int i = 1; i < TableSize; ++i)
+            {
+                int pos = (idx + i) % TableSize;
+                if (hashTable[pos] == -1)
+                {
+                    hashTable[pos] = key;
+                    return;
+                }
+                if (hashTable[pos] == key) return;
+            }
+        }
+    }
+
+    void insert_Quadratic_Probing(int key)
+    {
+        int idx = hashFunction(key);
+        if (hashTable[idx] == -1)
+        {
+            hashTable[idx] = key;
+            return;
+        }
+        if (hashTable[idx] == key)
+            return;
+
+        for (int i = 1; i < TableSize; ++i)
+        {
+            int pos = (idx + (i * i)) % TableSize;
+            if (hashTable[pos] == -1)
+            {
+                hashTable[pos] = key;
+                return;
+            }
+            if (hashTable[pos] == key) return;
+        }
+    }
+
+    // Separate chaining insert
+    void insertChaining(int key)
+    {
+        int idx = hashFunction(key);
+       chainTable[idx].insert_at_end(key);
+    }
+
+    // Utility: print open-addressing table
+    void printOpenAddressing()
+    {
+        cout << "Open-addressing table:" << endl;
+        for (int i = 0; i < TableSize; ++i)
+        {
+            if (hashTable[i] == -1)
+                cout << i << ": [empty]" << endl;
+            else
+                cout << i << ": " << hashTable[i] << endl;
+        }
+    }
+
+    // Utility: print chaining table
+    void printChaining()
+    {
+        cout << "Chaining table:" << endl;
+        for (int i = 0; i < TableSize; ++i)
+        {
+            cout << i << ": ";
+            for (int v : chainTable[i])
+                cout << v << " -> ";
+            cout << "null" << endl;
+        }
+    }
+
+    // Optional: clear tables
+    void clear()
+    {
+        fill(hashTable.begin(), hashTable.end(), -1);
+        for (auto &bucket : chainTable)
+            bucket.clear();
+    }
+};
+
+
 //======================================================================
 // Function to print section headers
 void printHeader(const string &title)
@@ -1323,8 +1485,7 @@ int main()
         string s_radix = "radixSort";
         printArray(arr6, n, s_radix);
 
-        // closing the output file of sorting algorithms
-        outFile.close();
+        
 
         // ========================================
         // Test Binary Search
@@ -1344,9 +1505,27 @@ int main()
         cout << "Found at index: " << index << endl;
         printTime("Binary Search", elapsed.count());
     }
+    
+    // ========================================
+    // Test Balanced Hashing
+    {
+        printHeader("HASHING WITH REPLACEMENT");
+
+        Hashing<int> hashTable(10);
+
+        int keys[] = {15, 25, 35, 5, 12, 22, 32, 42};
+        for (int key : keys)
+        {
+            hashTable.insertByReplacement(key);
+        }
+
+        hashTable.printOpenAddressing();
+    }
+    
     // ========================================
     // Test Balanced Parentheses
     // ========================================
+{
     printHeader("BALANCED PARENTHESES CHECK");
 
     string expressions[] = {
@@ -1366,10 +1545,11 @@ int main()
              << (balanced ? "Balanced" : "Not Balanced")
              << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
     }
-
+}
     // ========================================
     // Test String Conversion Functions
     // ========================================
+    {
     printHeader("STRING CONVERSION FUNCTIONS");
 
     start_time = high_resolution_clock::now();
@@ -1385,9 +1565,10 @@ int main()
     elapsed = end_time - start_time;
     cout << "intToString(67890) = '" << str << "'" << endl;
     printTime("Int to String conversion", elapsed.count());
-
+}
     // ========================================
     // test power function
+    {
     printHeader("POWER FUNCTION");
     cout << "Calculating power using recursion:" << endl;
     int base = 2;
@@ -1406,7 +1587,7 @@ int main()
     elapsed = end_time - start_time;
     cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
     printTime("Iterative Power", elapsed.count());
-
+}
     // ========================================
     // Summary
     // ========================================
@@ -1414,6 +1595,9 @@ int main()
     cout << "All data structures and algorithms have been tested successfully!" << endl;
     cout << string(60, '=') << "\n"
          << endl;
+
+    // closing the output file of sorting algorithms
+        outFile.close();
 
     return 0;
 }
