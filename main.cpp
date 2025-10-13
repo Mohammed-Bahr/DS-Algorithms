@@ -616,7 +616,6 @@ void radixsort(int arr[], int n)
         countSort(arr, n, exp);
 }
 
-
 // ============================================================
 // Important Functions : ->
 
@@ -1004,73 +1003,29 @@ public:
 //============================================================
 // Hashing algorithm using replacement method
 
-template <class H> 
+template <class H>
 class Hashing
 {
 private:
     const int TableSize;
-    vector<int> hashTable;
-    vector<LinkedList<H>> chainTable; 
+    vector<H> hashTable;
+    vector<list<H>> chainTable; // Using STL list for chaining
 
-    int hashFunction(int key)
+    int hashFunction(H key)
     {
         return key % TableSize;
     }
 
 public:
-    Hashing(int size) : TableSize(size) , hashTable(TableSize, -1), chainTable(TableSize) {}
+    Hashing(int size) : TableSize(size), hashTable(size, -1), chainTable(size) {}
 
-    void insertByReplacement(int key)
+    void insertByReplacement(H key)
     {
         int idx = hashFunction(key);
         hashTable[idx] = key;
-
-        // if (hashTable[idx] == -1)
-        // {
-        //     hashTable[idx] = key;
-        //     return;
-        // }
-
-        // if (hashTable[idx] == key)
-        //     return;
-
-        // int existing = hashTable[idx];
-        // int existingHome = hashFunction(existing);
-
-        // if (existingHome != idx)
-        // {
-        //     // Replace and reinsert the evicted element using linear probing
-        //     hashTable[idx] = key;
-        //     int pos = idx;
-        //     for (int i = 1; i < TableSize; ++i)
-        //     {
-        //         pos = (idx + i) % TableSize;
-        //         if (hashTable[pos] == -1)
-        //         {
-        //             hashTable[pos] = existing;
-        //             return;
-        //         }
-        //     }
-        //     // table full: drop evicted element (or handle as desired)
-        // }
-        // else
-        // {
-        //     // Existing element belongs here; insert key using linear probing
-        //     int pos = idx;
-        //     for (int i = 1; i < TableSize; ++i)
-        //     {
-        //         pos = (idx + i) % TableSize;
-        //         if (hashTable[pos] == -1)
-        //         {
-        //             hashTable[pos] = key;
-        //             return;
-        //         }
-        //     }
-        //     // table full
-        // }
     }
 
-    void insert_Linear_Probing(int key)
+    void insertLinearProbing(H key)
     {
         int idx = hashFunction(key);
         if (hashTable[idx] == -1)
@@ -1078,88 +1033,99 @@ public:
             hashTable[idx] = key;
             return;
         }
-        else if (hashTable[idx] == key)
-            return;
-        else
-        {
-            for (int i = 1; i < TableSize; ++i)
-            {
-                int pos = (idx + i) % TableSize;
-                if (hashTable[pos] == -1)
-                {
-                    hashTable[pos] = key;
-                    return;
-                }
-                if (hashTable[pos] == key) return;
-            }
-        }
-    }
-
-    void insert_Quadratic_Probing(int key)
-    {
-        int idx = hashFunction(key);
-        if (hashTable[idx] == -1)
-        {
-            hashTable[idx] = key;
-            return;
-        }
-        if (hashTable[idx] == key)
-            return;
 
         for (int i = 1; i < TableSize; ++i)
         {
-            int pos = (idx + (i * i)) % TableSize;
+            int pos = (idx + i) % TableSize;
             if (hashTable[pos] == -1)
             {
                 hashTable[pos] = key;
                 return;
             }
-            if (hashTable[pos] == key) return;
         }
     }
 
-    // Separate chaining insert
-    void insertChaining(int key)
+    void insertQuadraticProbing(H key)
     {
         int idx = hashFunction(key);
-       chainTable[idx].insert_at_end(key);
-    }
-
-    // Utility: print open-addressing table
-    void printOpenAddressing()
-    {
-        cout << "Open-addressing table:" << endl;
-        for (int i = 0; i < TableSize; ++i)
+        if (hashTable[idx] == -1)
         {
-            if (hashTable[i] == -1)
-                cout << i << ": [empty]" << endl;
-            else
-                cout << i << ": " << hashTable[i] << endl;
+            hashTable[idx] = key;
+            return;
+        }
+
+        for (int i = 1; i < TableSize; ++i)
+        {
+            int pos = (idx + i * i) % TableSize;
+            if (hashTable[pos] == -1)
+            {
+                hashTable[pos] = key;
+                return;
+            }
         }
     }
 
-    // Utility: print chaining table
-    void printChaining()
+    void insertChaining(H key)
     {
-        cout << "Chaining table:" << endl;
+        int idx = hashFunction(key);
+        chainTable[idx].push_back(key);
+    }
+
+
+    void insertDoubleHashing(H key)
+{
+    int idx = hashFunction(key);
+
+    if (hashTable[idx] == -1)
+    {
+        hashTable[idx] = key;
+        return;
+    }
+
+    int step = hashFunction2(key);
+
+    for (int i = 1; i < TableSize; ++i)
+    {
+        int pos = (idx + i * step) % TableSize;
+        if (hashTable[pos] == -1)
+        {
+            hashTable[pos] = key;
+            return;
+        }
+    }
+
+    cout << "Hash table is full, cannot insert key: " << key << endl;
+}
+
+
+    void print() const
+    {
+        cout << "Hash Table (Open Addressing):" << endl;
         for (int i = 0; i < TableSize; ++i)
         {
             cout << i << ": ";
-            for (int v : chainTable[i])
-                cout << v << " -> ";
-            cout << "null" << endl;
+            if (hashTable[i] == -1)
+                cout << "[empty]";
+            else
+                cout << hashTable[i];
+            cout << endl;
         }
     }
 
-    // Optional: clear tables
-    void clear()
+    void printChaining() const
     {
-        fill(hashTable.begin(), hashTable.end(), -1);
-        for (auto &bucket : chainTable)
-            bucket.clear();
+        cout << "Hash Table (Chaining):" << endl;
+        for (int i = 0; i < TableSize; ++i)
+        {
+            cout << i << ": ";
+            for (const H &value : chainTable[i])
+            {
+                cout << value << " -> ";
+            }
+            cout << "null" << endl;
+        }
     }
 };
-
 
 //======================================================================
 // Function to print section headers
@@ -1485,8 +1451,6 @@ int main()
         string s_radix = "radixSort";
         printArray(arr6, n, s_radix);
 
-        
-
         // ========================================
         // Test Binary Search
         // ========================================
@@ -1505,89 +1469,118 @@ int main()
         cout << "Found at index: " << index << endl;
         printTime("Binary Search", elapsed.count());
     }
-    
+
     // ========================================
-    // Test Balanced Hashing
+    // Test Hashing
+    //========================================
     {
-        printHeader("HASHING WITH REPLACEMENT");
+        printHeader("HASHING ALGORITHMS");
 
-        Hashing<int> hashTable(10);
+        Hashing<int> hash(10);
 
-        int keys[] = {15, 25, 35, 5, 12, 22, 32, 42};
+        // Test replacement method
+        cout << "\nTesting Replacement Method:" << endl;
+        vector<int> keys = {5, 15, 25, 35, 45};
         for (int key : keys)
         {
-            hashTable.insertByReplacement(key);
+            hash.insertByReplacement(key);
         }
+        hash.print();
 
-        hashTable.printOpenAddressing();
+        // Test linear probing
+        cout << "\nTesting Linear Probing:" << endl;
+        Hashing<int> hashLinear(10);
+        for (int key : keys)
+        {
+            hashLinear.insertLinearProbing(key);
+        }
+        hashLinear.print();
+
+        // Test quadratic probing
+        cout << "\nTesting Quadratic Probing:" << endl;
+        Hashing<int> hashQuad(10);
+        for (int key : keys)
+        {
+            hashQuad.insertQuadraticProbing(key);
+        }
+        hashQuad.print();
+
+        // Test chaining
+        cout << "\nTesting Chaining:" << endl;
+        Hashing<int> hashChain(10);
+        for (int key : keys)
+        {
+            hashChain.insertChaining(key);
+        }
+        hashChain.printChaining();
     }
-    
+
     // ========================================
     // Test Balanced Parentheses
     // ========================================
-{
-    printHeader("BALANCED PARENTHESES CHECK");
-
-    string expressions[] = {
-        "{[()]}",
-        "{[(])}",
-        "((()))",
-        "({[}])"};
-
-    for (const string &exp : expressions)
     {
-        start_time = high_resolution_clock::now();
-        bool balanced = AreBalanced(exp);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
+        printHeader("BALANCED PARENTHESES CHECK");
 
-        cout << "Expression: " << exp << " - "
-             << (balanced ? "Balanced" : "Not Balanced")
-             << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
+        string expressions[] = {
+            "{[()]}",
+            "{[(])}",
+            "((()))",
+            "({[}])"};
+
+        for (const string &exp : expressions)
+        {
+            start_time = high_resolution_clock::now();
+            bool balanced = AreBalanced(exp);
+            end_time = high_resolution_clock::now();
+            elapsed = end_time - start_time;
+
+            cout << "Expression: " << exp << " - "
+                 << (balanced ? "Balanced" : "Not Balanced")
+                 << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
+        }
     }
-}
     // ========================================
     // Test String Conversion Functions
     // ========================================
     {
-    printHeader("STRING CONVERSION FUNCTIONS");
+        printHeader("STRING CONVERSION FUNCTIONS");
 
-    start_time = high_resolution_clock::now();
-    int num = stringToInt("12345");
-    end_time = high_resolution_clock::now();
-    elapsed = end_time - start_time;
-    cout << "stringToInt('12345') = " << num << endl;
-    printTime("String to Int conversion", elapsed.count());
+        start_time = high_resolution_clock::now();
+        int num = stringToInt("12345");
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "stringToInt('12345') = " << num << endl;
+        printTime("String to Int conversion", elapsed.count());
 
-    start_time = high_resolution_clock::now();
-    string str = intToString(67890);
-    end_time = high_resolution_clock::now();
-    elapsed = end_time - start_time;
-    cout << "intToString(67890) = '" << str << "'" << endl;
-    printTime("Int to String conversion", elapsed.count());
-}
+        start_time = high_resolution_clock::now();
+        string str = intToString(67890);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "intToString(67890) = '" << str << "'" << endl;
+        printTime("Int to String conversion", elapsed.count());
+    }
     // ========================================
     // test power function
     {
-    printHeader("POWER FUNCTION");
-    cout << "Calculating power using recursion:" << endl;
-    int base = 2;
-    int p = 30; // Smaller values to avoid overflow
-    start_time = high_resolution_clock::now();
-    long long pow_result = power(base, p);
-    end_time = high_resolution_clock::now();
-    elapsed = end_time - start_time;
-    cout << base << " raised to the power of " << p << " is " << pow_result << endl;
-    printTime("Recursive Power", elapsed.count());
+        printHeader("POWER FUNCTION");
+        cout << "Calculating power using recursion:" << endl;
+        int base = 2;
+        int p = 30; // Smaller values to avoid overflow
+        start_time = high_resolution_clock::now();
+        long long pow_result = power(base, p);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << base << " raised to the power of " << p << " is " << pow_result << endl;
+        printTime("Recursive Power", elapsed.count());
 
-    cout << "Calculating power using iterative method:" << endl;
-    start_time = high_resolution_clock::now();
-    long long pow_iterative_result = power_iterative(base, p);
-    end_time = high_resolution_clock::now();
-    elapsed = end_time - start_time;
-    cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
-    printTime("Iterative Power", elapsed.count());
-}
+        cout << "Calculating power using iterative method:" << endl;
+        start_time = high_resolution_clock::now();
+        long long pow_iterative_result = power_iterative(base, p);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
+        printTime("Iterative Power", elapsed.count());
+    }
     // ========================================
     // Summary
     // ========================================
@@ -1597,7 +1590,7 @@ int main()
          << endl;
 
     // closing the output file of sorting algorithms
-        outFile.close();
+    outFile.close();
 
     return 0;
 }
