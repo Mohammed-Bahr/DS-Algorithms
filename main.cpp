@@ -801,12 +801,12 @@ private:
 
 public:
     LinkedList() : head(nullptr), tail(nullptr), count(0) {}
-    bool is_empty() { return count == 0; }
+    bool is_empty() const { return count == 0; }
 
-    int size() { return count; }
+    int size() const { return count; }
 
-    T start_item() { return head->item; }
-    T end_item() { return tail->item; }
+    T start_item() const { return head->item; }
+    T end_item() const { return tail->item; }
 
     void insert_at_end(T value)
     {
@@ -988,8 +988,13 @@ public:
         return arr;
     }
 
-    void print()
+    void print() const
     {
+        if (is_empty())
+        {
+            cout << "[empty]" << endl;
+            return;
+        }
         Node<T> *current = head;
         while (current != nullptr)
         {
@@ -1009,11 +1014,17 @@ class Hashing
 private:
     const int TableSize;
     vector<H> hashTable;
-    vector<list<H>> chainTable; // Using STL list for chaining
+    vector<LinkedList<H>> chainTable;
 
     int hashFunction(H key)
     {
         return key % TableSize;
+    }
+
+    int hashFunction2(H key)
+    {
+        const int R = 7;
+        return R - (key % R);
     }
 
 public:
@@ -1068,35 +1079,31 @@ public:
     void insertChaining(H key)
     {
         int idx = hashFunction(key);
-        chainTable[idx].push_back(key);
+        chainTable[idx].insert_at_end(key);
     }
-
 
     void insertDoubleHashing(H key)
-{
-    int idx = hashFunction(key);
-
-    if (hashTable[idx] == -1)
     {
-        hashTable[idx] = key;
-        return;
-    }
+        int idx = hashFunction(key);
 
-    int step = hashFunction2(key);
-
-    for (int i = 1; i < TableSize; ++i)
-    {
-        int pos = (idx + i * step) % TableSize;
-        if (hashTable[pos] == -1)
+        if (hashTable[idx] == -1)
         {
-            hashTable[pos] = key;
+            hashTable[idx] = key;
             return;
         }
+
+        int step = hashFunction2(key);
+
+        for (int i = 1; i < TableSize; ++i)
+        {
+            int pos = (idx + i * step) % TableSize;
+            if (hashTable[pos] == -1)
+            {
+                hashTable[pos] = key;
+                return;
+            }
+        }
     }
-
-    cout << "Hash table is full, cannot insert key: " << key << endl;
-}
-
 
     void print() const
     {
@@ -1118,11 +1125,7 @@ public:
         for (int i = 0; i < TableSize; ++i)
         {
             cout << i << ": ";
-            for (const H &value : chainTable[i])
-            {
-                cout << value << " -> ";
-            }
-            cout << "null" << endl;
+            chainTable[i].print();
         }
     }
 };
@@ -1186,7 +1189,403 @@ long long power_iterative(int num, int p)
     }
     return result;
 }
+//======================================================================
+// Binary trees
+//----------------------------------------------
+template <class T>
+struct BTNode
+{
+    T data;
+    BTNode<T> *left;
+    BTNode<T> *right;
 
+    BTNode(T val) : data(val), left(nullptr), right(nullptr) {}
+    BTNode() : left(nullptr), right(nullptr) {}
+};
+
+template <class T>
+class BinaryTree
+{
+private:
+    BTNode<T> *root;
+    int count;
+
+    // Helper function for recursive insertion
+    BTNode<T> *insertRec(BTNode<T> *node, T value)
+    {
+        if (node == nullptr)
+        {
+            return new BTNode<T>(value);
+        }
+        if (value < node->data)
+        {
+            node->left = insertRec(node->left, value);
+        }
+        else
+        {
+            node->right = insertRec(node->right, value);
+        }
+        return node;
+    }
+
+    // Helper function for recursive search
+    BTNode<T> *searchRec(BTNode<T> *node, T value)
+    {
+        if (node == nullptr || node->data == value)
+        {
+            return node;
+        }
+        if (value < node->data)
+        {
+            return searchRec(node->left, value);
+        }
+        return searchRec(node->right, value);
+    }
+
+    // Helper function to find minimum value node
+    BTNode<T> *findMin(BTNode<T> *node)
+    {
+        while (node && node->left != nullptr)
+        {
+            node = node->left;
+        }
+        return node;
+    }
+
+    // Helper function for recursive deletion
+    BTNode<T> *deleteRec(BTNode<T> *node, T value)
+    {
+        if (node == nullptr)
+        {
+            return node;
+        }
+
+        if (value < node->data)
+        {
+            node->left = deleteRec(node->left, value);
+        }
+        else if (value > node->data)
+        {
+            node->right = deleteRec(node->right, value);
+        }
+        else
+        {
+            // Node with only one child or no child
+            if (node->left == nullptr)
+            {
+                BTNode<T> *temp = node->right;
+                delete node;
+                count--;
+                return temp;
+            }
+            else if (node->right == nullptr)
+            {
+                BTNode<T> *temp = node->left;
+                delete node;
+                count--;
+                return temp;
+            }
+
+            // Node with two children
+            BTNode<T> *temp = findMin(node->right);
+            node->data = temp->data;
+            node->right = deleteRec(node->right, temp->data);
+            count++; // Adjust because deleteRec will decrement
+        }
+        return node;
+    }
+
+    // Helper for inorder traversal
+    void inorderRec(BTNode<T> *node, vector<T> &result)
+    {
+        if (node != nullptr)
+        {
+            inorderRec(node->left, result);
+            result.push_back(node->data);
+            inorderRec(node->right, result);
+        }
+    }
+
+    // Helper for preorder traversal
+    void preorderRec(BTNode<T> *node, vector<T> &result)
+    {
+        if (node != nullptr)
+        {
+            result.push_back(node->data);
+            preorderRec(node->left, result);
+            preorderRec(node->right, result);
+        }
+    }
+
+    // Helper for postorder traversal
+    void postorderRec(BTNode<T> *node, vector<T> &result)
+    {
+        if (node != nullptr)
+        {
+            postorderRec(node->left, result);
+            postorderRec(node->right, result);
+            result.push_back(node->data);
+        }
+    }
+
+    // Helper to count nodes
+    int countNodesRec(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        return 1 + countNodesRec(node->left) + countNodesRec(node->right);
+    }
+
+    // Helper to count leaf nodes
+    int countLeavesRec(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            return 1;
+        }
+        return countLeavesRec(node->left) + countLeavesRec(node->right);
+    }
+
+    // Helper to clear tree
+    void clearRec(BTNode<T> *node)
+    {
+        if (node != nullptr)
+        {
+            clearRec(node->left);
+            clearRec(node->right);
+            delete node;
+        }
+    }
+
+public:
+    BinaryTree() : root(nullptr), count(0) {}
+
+    ~BinaryTree()
+    {
+        clear();
+    }
+
+    bool is_empty() const
+    {
+        return root == nullptr;
+    }
+
+    // Get height of tree
+    int height(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        int leftHeight = height(node->left);
+        int rightHeight = height(node->right);
+        return max(leftHeight, rightHeight) + 1;
+    }
+
+    // Get balance factor
+    int getBalance(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+            return 0;
+        return height(node->left) - height(node->right);
+    }
+
+    // Check if node is leaf
+    bool isLeaf(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+        {
+            return false;
+        }
+        return (node->left == nullptr && node->right == nullptr);
+    }
+
+    // Get root node
+    BTNode<T> *getRoot() const
+    {
+        return root;
+    }
+
+    // Check if tree is balanced
+    bool isBalanced(BTNode<T> *node) const
+    {
+        if (node == nullptr)
+            return true;
+
+        int balance = getBalance(node);
+
+        if (abs(balance) > 1)
+            return false;
+
+        return isBalanced(node->left) && isBalanced(node->right);
+    }
+
+    // Insert value
+    void insert(T value)
+    {
+        root = insertRec(root, value);
+        count++;
+    }
+
+    // Search for value
+    bool search(T value)
+    {
+        return searchRec(root, value) != nullptr;
+    }
+
+    // Delete value
+    void deleteNode(T value)
+    {
+        root = deleteRec(root, value);
+    }
+
+    // Get size
+    int size() const
+    {
+        return count;
+    }
+
+    // Inorder traversal (Left, Root, Right)
+    vector<T> inorder()
+    {
+        vector<T> result;
+        inorderRec(root, result);
+        return result;
+    }
+
+    // Preorder traversal (Root, Left, Right)
+    vector<T> preorder()
+    {
+        vector<T> result;
+        preorderRec(root, result);
+        return result;
+    }
+
+    // Postorder traversal (Left, Right, Root)
+    vector<T> postorder()
+    {
+        vector<T> result;
+        postorderRec(root, result);
+        return result;
+    }
+
+    // Level order traversal (BFS)
+    vector<T> levelorder()
+    {
+        vector<T> result;
+        if (root == nullptr)
+            return result;
+
+        queue<BTNode<T> *> q;
+        q.push(root);
+
+        while (!q.empty())
+        {
+            BTNode<T> *current = q.front();
+            q.pop();
+            result.push_back(current->data);
+
+            if (current->left != nullptr)
+                q.push(current->left);
+            if (current->right != nullptr)
+                q.push(current->right);
+        }
+
+        return result;
+    }
+
+    // Find minimum value
+    T findMinValue()
+    {
+        if (is_empty())
+        {
+            throw runtime_error("Tree is empty");
+        }
+        BTNode<T> *minNode = findMin(root);
+        return minNode->data;
+    }
+
+    // Find maximum value
+    T findMaxValue()
+    {
+        if (is_empty())
+        {
+            throw runtime_error("Tree is empty");
+        }
+        BTNode<T> *current = root;
+        while (current->right != nullptr)
+        {
+            current = current->right;
+        }
+        return current->data;
+    }
+
+    // Count total nodes
+    int countNodes() const
+    {
+        return countNodesRec(root);
+    }
+
+    // Count leaf nodes
+    int countLeaves() const
+    {
+        return countLeavesRec(root);
+    }
+
+    // Count internal nodes
+    int countInternalNodes() const
+    {
+        return countNodes() - countLeaves();
+    }
+
+    // Clear tree
+    void clear()
+    {
+        clearRec(root);
+        root = nullptr;
+        count = 0;
+    }
+
+    // Print tree structure
+    void printTree(BTNode<T> *node, string indent = "", bool isRight = true)
+    {
+        if (node != nullptr)
+        {
+            cout << indent;
+            if (isRight)
+            {
+                cout << "R----";
+                indent += "     ";
+            }
+            else
+            {
+                cout << "L----";
+                indent += "|    ";
+            }
+            cout << node->data << endl;
+
+            printTree(node->left, indent, false);
+            printTree(node->right, indent, true);
+        }
+    }
+
+    // Print tree (wrapper)
+    void print()
+    {
+        if (is_empty())
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
+        printTree(root);
+    }
+};
 //======================================================================
 // Main function to test all implementations
 int main()
@@ -1444,12 +1843,12 @@ int main()
         memcpy(arr10, arr, sizeof(arr));
         printArray(arr10, n, "Original Array");
         start_time = high_resolution_clock::now();
-        CountingSort(arr10, n);
+        radixsort(arr10, n);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
         printTime("Radix Sort", elapsed.count());
         string s_radix = "radixSort";
-        printArray(arr6, n, s_radix);
+        printArray(arr10, n, s_radix);
 
         // ========================================
         // Test Binary Search
@@ -1473,6 +1872,7 @@ int main()
     // ========================================
     // Test Hashing
     //========================================
+
     {
         printHeader("HASHING ALGORITHMS");
 
@@ -1580,6 +1980,163 @@ int main()
         elapsed = end_time - start_time;
         cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
         printTime("Iterative Power", elapsed.count());
+    }
+    // ========================================
+    // Binary Tree
+    // ========================================
+    {
+        printHeader("BINARY TREE OPERATIONS");
+
+        BinaryTree<int> tree;
+
+        // Test insertion
+        cout << "\nInserting elements: 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65" << endl;
+        auto start_time = high_resolution_clock::now();
+        vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65};
+        for (int val : values)
+        {
+            tree.insert(val);
+        }
+        auto end_time = high_resolution_clock::now();
+        duration<double, milli> elapsed = end_time - start_time;
+        printTime("Insert 11 elements", elapsed.count());
+
+        cout << "\nTree size: " << tree.size() << endl;
+        cout << "Tree height: " << tree.height(tree.getRoot()) << endl;
+        cout << "Is balanced: " << (tree.isBalanced(tree.getRoot()) ? "Yes" : "No") << endl;
+
+        // Print tree structure
+        cout << "\nTree structure:" << endl;
+        tree.print();
+
+        // Test traversals
+        cout << "\n--- Traversals ---" << endl;
+
+        start_time = high_resolution_clock::now();
+        vector<int> inorder = tree.inorder();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Inorder (L-Root-R): ";
+        for (int val : inorder)
+            cout << val << " ";
+        cout << endl;
+        printTime("Inorder traversal", elapsed.count());
+
+        start_time = high_resolution_clock::now();
+        vector<int> preorder = tree.preorder();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Preorder (Root-L-R): ";
+        for (int val : preorder)
+            cout << val << " ";
+        cout << endl;
+        printTime("Preorder traversal", elapsed.count());
+
+        start_time = high_resolution_clock::now();
+        vector<int> postorder = tree.postorder();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Postorder (L-R-Root): ";
+        for (int val : postorder)
+            cout << val << " ";
+        cout << endl;
+        printTime("Postorder traversal", elapsed.count());
+
+        start_time = high_resolution_clock::now();
+        vector<int> levelorder = tree.levelorder();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Level order (BFS): ";
+        for (int val : levelorder)
+            cout << val << " ";
+        cout << endl;
+        printTime("Level order traversal", elapsed.count());
+
+        // Test search
+        cout << "\n--- Search Operations ---" << endl;
+        int searchVals[] = {40, 100, 10};
+        for (int val : searchVals)
+        {
+            start_time = high_resolution_clock::now();
+            bool found = tree.search(val);
+            end_time = high_resolution_clock::now();
+            elapsed = end_time - start_time;
+            cout << "Searching for " << val << ": " << (found ? "Found" : "Not Found");
+            cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
+        }
+
+        // Test min/max
+        cout << "\n--- Min/Max Operations ---" << endl;
+        start_time = high_resolution_clock::now();
+        int minVal = tree.findMinValue();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Minimum value: " << minVal << endl;
+        printTime("Find minimum", elapsed.count());
+
+        start_time = high_resolution_clock::now();
+        int maxVal = tree.findMaxValue();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "Maximum value: " << maxVal << endl;
+        printTime("Find maximum", elapsed.count());
+
+        // Test counting
+        cout << "\n--- Node Counting ---" << endl;
+        cout << "Total nodes: " << tree.countNodes() << endl;
+        cout << "Leaf nodes: " << tree.countLeaves() << endl;
+        cout << "Internal nodes: " << tree.countInternalNodes() << endl;
+
+        // Test deletion
+        cout << "\n--- Deletion Operations ---" << endl;
+        int deleteVals[] = {20, 30, 50};
+        for (int val : deleteVals)
+        {
+            start_time = high_resolution_clock::now();
+            tree.deleteNode(val);
+            end_time = high_resolution_clock::now();
+            elapsed = end_time - start_time;
+            cout << "Deleted " << val;
+            cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
+        }
+
+        cout << "\nTree size after deletions: " << tree.size() << endl;
+        cout << "Tree height after deletions: " << tree.height(tree.getRoot()) << endl;
+
+        cout << "\nTree structure after deletions:" << endl;
+        tree.print();
+
+        cout << "\nInorder after deletions: ";
+        inorder = tree.inorder();
+        for (int val : inorder)
+            cout << val << " ";
+        cout << endl;
+
+        // Test clear
+        start_time = high_resolution_clock::now();
+        tree.clear();
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        cout << "\nCleared tree" << endl;
+        printTime("Clear tree", elapsed.count());
+        cout << "Tree is empty: " << (tree.is_empty() ? "Yes" : "No") << endl;
+
+        // Performance test with larger dataset
+        cout << "\n--- Performance Test ---" << endl;
+        BinaryTree<int> perfTree;
+
+        start_time = high_resolution_clock::now();
+        for (int i = 0; i < 1000; i++)
+        {
+            perfTree.insert(rand() % 10000);
+        }
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
+        printTime("Insert 1000 random elements", elapsed.count());
+
+        cout << "Final tree size: " << perfTree.size() << endl;
+        cout << "Final tree height: " << perfTree.height(perfTree.getRoot()) << endl;
+        cout << "Is balanced: " << (perfTree.isBalanced(perfTree.getRoot()) ? "Yes" : "No") << endl;
     }
     // ========================================
     // Summary
