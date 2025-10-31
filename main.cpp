@@ -1189,6 +1189,71 @@ long long power_iterative(int num, int p)
     }
     return result;
 }
+
+
+//======================================================================
+// Implement the Fibonacci series using divide and conquer (matrix multiplication)
+
+struct Matrix
+{
+    long long M[2][2]; // transformation matrix
+
+    Matrix()
+    {
+        M[0][0] = 1;
+        M[0][1] = 1;
+        M[1][0] = 1;
+        M[1][1] = 0;
+    }
+
+    Matrix operator*(const Matrix &other) const
+    {
+        Matrix result;
+        result.M[0][0] = M[0][0] * other.M[0][0] + M[0][1] * other.M[1][0];
+        result.M[0][1] = M[0][0] * other.M[0][1] + M[0][1] * other.M[1][1];
+        result.M[1][0] = M[1][0] * other.M[0][0] + M[1][1] * other.M[1][0];
+        result.M[1][1] = M[1][0] * other.M[0][1] + M[1][1] * other.M[1][1];
+        return result;
+    }
+    
+    Matrix Rec_matrix(Matrix base, long long n)
+    {
+        if (n == 1)
+            return base;
+    
+        Matrix half = Rec_matrix(base, n / 2);
+        Matrix result ;
+    
+        if (n % 2 == 1) // in case n is odd number
+        {
+            result = half * half;
+            result = result * base;
+        }
+        else // in case n is even number
+        {
+            result = half * half;
+        }
+        return result;
+    }
+    
+    int fib_matrix(long long n)
+    {
+        if (n < 0)
+            return -1;
+        if (n == 0)
+            return 0;
+        if (n == 1)
+            return 1;
+    
+        --n;
+        Matrix base;
+        Matrix result = Rec_matrix(base, n);
+    
+    
+        return result.M[0][0];
+    }
+};
+
 //======================================================================
 // Binary trees
 //----------------------------------------------
@@ -1587,567 +1652,617 @@ public:
     }
 };
 //======================================================================
-// Main function to test all implementations
+// Heap Tree
+
+template <class T>
+struct HNode{
+    T data;
+    HNode *left;
+    HNode *right;
+    HNode () : left(nullptr) , right(nullptr) {}
+};
+
+class MaxHeap{
+    
+}
+
+
+
+
+////======================================================================
+// Function prototypes for menu operations
+void testStack();
+void testQueue();
+void testLinkedList();
+void testSortingAlgorithms();
+void testBinarySearch();
+void testHashing();
+void testBalancedParentheses();
+void testStringConversion();
+void testPowerFunction();
+void testBinaryTree();
+void testFibonacci();
+void displayMenu();
+
 int main()
 {
-    // Initialize random seed for consistent results
     srand(static_cast<unsigned>(time(nullptr)));
+
+    int choice;
+    bool running = true;
+
+    cout << "\n";
+    cout << string(70, '=') << endl;
+    cout << "    DATA STRUCTURES AND ALGORITHMS TESTING SUITE" << endl;
+    cout << string(70, '=') << endl;
+
+    while (running)
+    {
+        displayMenu();
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\n[ERROR] Invalid input! Please enter a number.\n";
+            continue;
+        }
+
+        cout << "\n";
+
+        switch (choice)
+        {
+        case 1:
+            testStack();
+            break;
+        case 2:
+            testQueue();
+            break;
+        case 3:
+            testLinkedList();
+            break;
+        case 4:
+            testSortingAlgorithms();
+            break;
+        case 5:
+            testBinarySearch();
+            break;
+        case 6:
+            testHashing();
+            break;
+        case 7:
+            testBalancedParentheses();
+            break;
+        case 8:
+            testStringConversion();
+            break;
+        case 9:
+            testPowerFunction();
+            break;
+        case 10:
+            testBinaryTree();
+            break;
+        case 11:
+            testFibonacci();
+            break;
+        case 0:
+            running = false;
+            printHeader("PROGRAM TERMINATED");
+            cout << "Thank you for using the testing suite!\n";
+            break;
+        default:
+            cout << "[ERROR] Invalid choice! Please select a valid option (0-11).\n";
+        }
+
+        if (running && choice >= 1 && choice <= 11)
+        {
+            cout << "\nPress Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+        }
+    }
+
+    return 0;
+}
+
+void displayMenu()
+{
+    cout << "\n" << string(70, '-') << endl;
+    cout << "                           MAIN MENU" << endl;
+    cout << string(70, '-') << endl;
+    cout << " 1.  Test Stack Operations" << endl;
+    cout << " 2.  Test Queue Operations" << endl;
+    cout << " 3.  Test Linked List Operations" << endl;
+    cout << " 4.  Test Sorting Algorithms" << endl;
+    cout << " 5.  Test Binary Search" << endl;
+    cout << " 6.  Test Hashing Algorithms" << endl;
+    cout << " 7.  Test Balanced Parentheses" << endl;
+    cout << " 8.  Test String Conversion Functions" << endl;
+    cout << " 9.  Test Power Functions" << endl;
+    cout << " 10. Test Binary Tree Operations" << endl;
+    cout << " 11. Test Fibonacci (Matrix Method)" << endl;
+    cout << " 0.  Exit Program" << endl;
+    cout << string(70, '-') << endl;
+}
+
+void testStack()
+{
+    printHeader("STACK OPERATIONS");
+
+    Stack<int> stack;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 1; i <= 1000; i++)
+    {
+        stack.push(i);
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Push 1000 elements", elapsed.count());
+
+    cout << "Stack size: " << stack.size() << endl;
+    cout << "Top element: " << stack.peek() << endl;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 0; i < 500; i++)
+    {
+        stack.pop();
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Pop 500 elements", elapsed.count());
+
+    cout << "Stack size after pops: " << stack.size() << endl;
+
+    start_time = high_resolution_clock::now();
+    stack.clear();
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Clear stack", elapsed.count());
+}
+
+void testQueue()
+{
+    printHeader("QUEUE OPERATIONS");
+
+    Queue<int> queue;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 1; i <= 1000; i++)
+    {
+        queue.enqueue(i);
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Enqueue 1000 elements", elapsed.count());
+
+    cout << "First element: " << queue.first() << endl;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 0; i < 500; i++)
+    {
+        queue.dequeue();
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Dequeue 500 elements", elapsed.count());
+
+    start_time = high_resolution_clock::now();
+    queue.clear();
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Clear queue", elapsed.count());
+}
+
+void testLinkedList()
+{
+    printHeader("LINKED LIST OPERATIONS");
+
+    LinkedList<int> list;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 1; i <= 1000; i++)
+    {
+        list.insert_at_end(i);
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert 1000 elements at end", elapsed.count());
+
+    cout << "List size: " << list.size() << endl;
+    cout << "Start item: " << list.start_item() << endl;
+    cout << "End item: " << list.end_item() << endl;
+
+    start_time = high_resolution_clock::now();
+    for (int i = 0; i < 10; i++)
+    {
+        list.insert_at_start(i);
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert 10 elements at start", elapsed.count());
+
+    start_time = high_resolution_clock::now();
+    list.insert_at_index(500, 9999);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert at index 500", elapsed.count());
+
+    start_time = high_resolution_clock::now();
+    for (int i = 0; i < 100; i++)
+    {
+        list.remove_from_end();
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Remove 100 elements from end", elapsed.count());
+
+    start_time = high_resolution_clock::now();
+    for (int i = 0; i < 100; i++)
+    {
+        list.remove_from_start();
+    }
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Remove 100 elements from start", elapsed.count());
+
+    cout << "List size after removals: " << list.size() << endl;
+}
+
+void testSortingAlgorithms()
+{
+    printHeader("SORTING ALGORITHMS");
+
+    const int n = 20;
+    int arr[n];
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    for (int i = 0; i < n; i++)
+    {
+        arr[i] = rand() % n;
+    }
+
+    int arr1[n], arr2[n], arr3[n], arr4[n], arr5[n];
+    int arr6[n], arr7[n], arr8[n], arr9[n], arr10[n];
+
+    cout << "\nArray size: " << n << " elements\n" << endl;
+
+    // Selection Sort
+    memcpy(arr1, arr, sizeof(arr));
+    printArray(arr1, n, "Original Array");
+    start_time = high_resolution_clock::now();
+    Selection_Sort(arr1, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Selection Sort", elapsed.count());
+
+    // Bubble Sort
+    memcpy(arr2, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    bubbleSort(arr2, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Bubble Sort", elapsed.count());
+
+    // Insertion Sort
+    memcpy(arr3, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    insertionSort(arr3, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insertion Sort", elapsed.count());
+
+    // Merge Sort
+    memcpy(arr4, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    mergeSort(arr4, 0, n - 1);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Merge Sort", elapsed.count());
+
+    // Quick Sort
+    memcpy(arr5, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    quickSort(arr5, 0, n - 1);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Quick Sort", elapsed.count());
+
+    // Random Quick Sort
+    memcpy(arr6, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    random_quickSort(arr6, 0, n - 1);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Random Quick Sort", elapsed.count());
+
+    // Shell Sort
+    memcpy(arr7, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    shellSort(arr7, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Shell Sort", elapsed.count());
+
+    // Heap Sort
+    memcpy(arr8, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    heapSort(arr8, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Heap Sort", elapsed.count());
+
+    // Counting Sort
+    memcpy(arr9, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    CountingSort(arr9, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Counting Sort", elapsed.count());
+
+    // Radix Sort
+    memcpy(arr10, arr, sizeof(arr));
+    start_time = high_resolution_clock::now();
+    radixsort(arr10, n);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Radix Sort", elapsed.count());
+
+    cout << "\nSorted array sample: ";
+    for (int i = 0; i < min(10, n); i++)
+    {
+        cout << arr10[i] << " ";
+    }
+    cout << "..." << endl;
+}
+
+void testBinarySearch()
+{
+    printHeader("BINARY SEARCH");
+
+    int sorted_arr[100];
+    for (int i = 0; i < 100; i++)
+        sorted_arr[i] = i * 2;
+
+    auto start_time = high_resolution_clock::now();
+    int index = binary_search(sorted_arr, 0, 99, 50);
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed = end_time - start_time;
+
+    cout << "Searching for 50 in sorted array (0, 2, 4, ..., 198)..." << endl;
+    cout << "Found at index: " << index << endl;
+    cout << "Value at index: " << sorted_arr[index] << endl;
+    printTime("Binary Search", elapsed.count());
+}
+
+void testHashing()
+{
+    printHeader("HASHING ALGORITHMS");
+
+    Hashing<int> hash(10);
+    vector<int> keys = {5, 15, 25, 35, 45};
+
+    cout << "\nTesting Replacement Method:" << endl;
+    for (int key : keys)
+    {
+        hash.insertByReplacement(key);
+    }
+    hash.print();
+
+    cout << "\nTesting Linear Probing:" << endl;
+    Hashing<int> hashLinear(10);
+    for (int key : keys)
+    {
+        hashLinear.insertLinearProbing(key);
+    }
+    hashLinear.print();
+
+    cout << "\nTesting Quadratic Probing:" << endl;
+    Hashing<int> hashQuad(10);
+    for (int key : keys)
+    {
+        hashQuad.insertQuadraticProbing(key);
+    }
+    hashQuad.print();
+
+    cout << "\nTesting Chaining:" << endl;
+    Hashing<int> hashChain(10);
+    for (int key : keys)
+    {
+        hashChain.insertChaining(key);
+    }
+    hashChain.printChaining();
+}
+
+void testBalancedParentheses()
+{
+    printHeader("BALANCED PARENTHESES CHECK");
+
+    string expressions[] = {
+        "{[()]}",
+        "{[(])}",
+        "((()))",
+        "({[}])"};
 
     auto start_time = high_resolution_clock::now();
     auto end_time = high_resolution_clock::now();
     duration<double, milli> elapsed;
 
-    // ========================================
-    // Test Stack
-    // ========================================
+    for (const string &exp : expressions)
     {
-        printHeader("STACK OPERATIONS");
-
-        Stack<int> stack;
-
         start_time = high_resolution_clock::now();
-        for (int i = 1; i <= 1000; i++)
-        {
-            stack.push(i);
-        }
+        bool balanced = AreBalanced(exp);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
-        printTime("Push 1000 elements", elapsed.count());
 
-        cout << "Stack size: " << stack.size() << endl;
-        cout << "Top element: " << stack.peek() << endl;
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 500; i++)
-        {
-            stack.pop();
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Pop 500 elements", elapsed.count());
-
-        cout << "Stack size after pops: " << stack.size() << endl;
-
-        start_time = high_resolution_clock::now();
-        stack.clear();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Clear stack", elapsed.count());
+        cout << "Expression: " << exp << " - "
+             << (balanced ? "Balanced" : "Not Balanced")
+             << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
     }
-    // ========================================
-    // Test Queue
-    // ========================================
+}
+
+void testStringConversion()
+{
+    printHeader("STRING CONVERSION FUNCTIONS");
+
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    start_time = high_resolution_clock::now();
+    int num = stringToInt("12345");
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << "stringToInt('12345') = " << num << endl;
+    printTime("String to Int conversion", elapsed.count());
+
+    start_time = high_resolution_clock::now();
+    string str = intToString(67890);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << "intToString(67890) = '" << str << "'" << endl;
+    printTime("Int to String conversion", elapsed.count());
+}
+
+void testPowerFunction()
+{
+    printHeader("POWER FUNCTION");
+
+    int base = 2;
+    int p = 30;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    cout << "Calculating power using recursion:" << endl;
+    start_time = high_resolution_clock::now();
+    long long pow_result = power(base, p);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << base << " raised to the power of " << p << " is " << pow_result << endl;
+    printTime("Recursive Power", elapsed.count());
+
+    cout << "\nCalculating power using iterative method:" << endl;
+    start_time = high_resolution_clock::now();
+    long long pow_iterative_result = power_iterative(base, p);
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
+    printTime("Iterative Power", elapsed.count());
+}
+
+void testBinaryTree()
+{
+    printHeader("BINARY TREE OPERATIONS");
+
+    BinaryTree<int> tree;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    cout << "\nInserting elements: 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65" << endl;
+    start_time = high_resolution_clock::now();
+    vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65};
+    for (int val : values)
     {
-        printHeader("QUEUE OPERATIONS");
-
-        Queue<int> queue;
-
-        start_time = high_resolution_clock::now();
-        for (int i = 1; i <= 1000; i++)
-        {
-            queue.enqueue(i);
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Enqueue 1000 elements", elapsed.count());
-
-        cout << "First element: " << queue.first() << endl;
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 500; i++)
-        {
-            queue.dequeue();
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Dequeue 500 elements", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        queue.clear();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Clear queue", elapsed.count());
+        tree.insert(val);
     }
-    // ========================================
-    // Test Linked List
-    // ========================================
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert 11 elements", elapsed.count());
+
+    cout << "\nTree size: " << tree.size() << endl;
+    cout << "Tree height: " << tree.height(tree.getRoot()) << endl;
+    cout << "Is balanced: " << (tree.isBalanced(tree.getRoot()) ? "Yes" : "No") << endl;
+
+    cout << "\nTree structure:" << endl;
+    tree.print();
+
+    cout << "\n--- Traversals ---" << endl;
+    vector<int> inorder = tree.inorder();
+    cout << "Inorder (L-Root-R): ";
+    for (int val : inorder)
+        cout << val << " ";
+    cout << endl;
+
+    cout << "\n--- Search Operations ---" << endl;
+    int searchVals[] = {40, 100, 10};
+    for (int val : searchVals)
     {
-        printHeader("LINKED LIST OPERATIONS");
-
-        LinkedList<int> list;
-
         start_time = high_resolution_clock::now();
-        for (int i = 1; i <= 1000; i++)
-        {
-            list.insert_at_end(i);
-        }
+        bool found = tree.search(val);
         end_time = high_resolution_clock::now();
         elapsed = end_time - start_time;
-        printTime("Insert 1000 elements at end", elapsed.count());
-
-        cout << "List size: " << list.size() << endl;
-        cout << "Start item: " << list.start_item() << endl;
-        cout << "End item: " << list.end_item() << endl;
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 10; i++)
-        {
-            list.insert_at_start(i);
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Insert 10 elements at start", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        list.insert_at_index(500, 9999);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Insert at index 500", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 100; i++)
-        {
-            list.remove_from_end();
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Remove 100 elements from end", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 100; i++)
-        {
-            list.remove_from_start();
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Remove 100 elements from start", elapsed.count());
-
-        cout << "List size after removals: " << list.size() << endl;
-    }
-    // ========================================
-    // Test Sorting Algorithms
-    // ========================================
-    {
-        ofstream outFile("output.txt", ios::app);
-        const int n = 20;
-        printHeader_for_sorting("SORTING ALGORITHMS of -> ", n);
-        int arr[n];
-        // const int n = sizeof(arr) / sizeof(arr[0]);
-        int size = n;
-        // Initialize array with random values for fair comparison
-        for (int i = 0; i < n; i++)
-        {
-            arr[i] = rand() % n;
-        }
-
-        int arr1[n];
-        int arr3[n];
-        int arr5[n];
-        int arr6[n];
-        int arr7[n];
-        int arr2[n];
-        int arr8[n];
-        int arr4[n];
-        int arr9[n];
-        int arr10[n];
-
-        // Selection Sort
-        memcpy(arr1, arr, sizeof(arr));
-        printArray(arr1, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        Selection_Sort(arr1, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Selection Sort", elapsed.count());
-
-        // Bubble Sort
-        memcpy(arr2, arr, sizeof(arr));
-        printArray(arr2, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        bubbleSort(arr2, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Bubble Sort", elapsed.count());
-
-        // Insertion Sort
-        memcpy(arr3, arr, sizeof(arr));
-        printArray(arr3, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        insertionSort(arr3, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Insertion Sort", elapsed.count());
-
-        // Merge Sort
-        memcpy(arr4, arr, sizeof(arr));
-        printArray(arr4, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        mergeSort(arr4, 0, n - 1);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Merge Sort", elapsed.count());
-        string s_merge = "mergeSort";
-        printArray(arr4, n, s_merge);
-
-        // Quick Sort
-        memcpy(arr5, arr, sizeof(arr));
-        printArray(arr5, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        quickSort(arr5, 0, n - 1);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Quick Sort", elapsed.count());
-        string s_quick = "quickSort";
-        printArray(arr5, n, s_quick);
-
-        // Random Quick Sort
-        memcpy(arr6, arr, sizeof(arr));
-        printArray(arr6, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        random_quickSort(arr6, 0, n - 1);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Random Quick Sort", elapsed.count());
-        string s_random_quick = "random_quickSort";
-        printArray(arr6, n, s_random_quick);
-
-        // Shell Sort
-        memcpy(arr7, arr, sizeof(arr));
-        printArray(arr7, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        shellSort(arr7, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Shell Sort", elapsed.count());
-
-        // Heap Sort
-        memcpy(arr8, arr, sizeof(arr));
-        printArray(arr8, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        heapSort(arr8, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Heap Sort", elapsed.count());
-
-        // Counting Sort
-        memcpy(arr9, arr, sizeof(arr));
-        printArray(arr9, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        CountingSort(arr9, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Counting Sort", elapsed.count());
-        cout << endl;
-
-        // Radix Sort
-        memcpy(arr10, arr, sizeof(arr));
-        printArray(arr10, n, "Original Array");
-        start_time = high_resolution_clock::now();
-        radixsort(arr10, n);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Radix Sort", elapsed.count());
-        string s_radix = "radixSort";
-        printArray(arr10, n, s_radix);
-
-        // ========================================
-        // Test Binary Search
-        // ========================================
-        printHeader("BINARY SEARCH");
-
-        int sorted_arr[100];
-        for (int i = 0; i < 100; i++)
-            sorted_arr[i] = i * 2;
-
-        start_time = high_resolution_clock::now();
-        int index = binary_search(sorted_arr, 0, 99, 50);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-
-        cout << "Searching for 50 in sorted array..." << endl;
-        cout << "Found at index: " << index << endl;
-        printTime("Binary Search", elapsed.count());
+        cout << "Searching for " << val << ": " << (found ? "Found" : "Not Found");
+        cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
     }
 
-    // ========================================
-    // Test Hashing
-    //========================================
+    cout << "\n--- Min/Max Operations ---" << endl;
+    cout << "Minimum value: " << tree.findMinValue() << endl;
+    cout << "Maximum value: " << tree.findMaxValue() << endl;
 
+    cout << "\n--- Node Counting ---" << endl;
+    cout << "Total nodes: " << tree.countNodes() << endl;
+    cout << "Leaf nodes: " << tree.countLeaves() << endl;
+    cout << "Internal nodes: " << tree.countInternalNodes() << endl;
+}
+
+void testFibonacci()
+{
+    printHeader("FIBONACCI SEQUENCE (MATRIX METHOD)");
+
+    Matrix matrix;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    cout << "Computing Fibonacci numbers using matrix exponentiation:\n" << endl;
+
+    vector<int> test_values = {5, 10, 15, 20, 30, 40, 50};
+
+    for (int n : test_values)
     {
-        printHeader("HASHING ALGORITHMS");
+        start_time = high_resolution_clock::now();
+        long long result = matrix.fib_matrix(n);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
 
-        Hashing<int> hash(10);
-
-        // Test replacement method
-        cout << "\nTesting Replacement Method:" << endl;
-        vector<int> keys = {5, 15, 25, 35, 45};
-        for (int key : keys)
-        {
-            hash.insertByReplacement(key);
-        }
-        hash.print();
-
-        // Test linear probing
-        cout << "\nTesting Linear Probing:" << endl;
-        Hashing<int> hashLinear(10);
-        for (int key : keys)
-        {
-            hashLinear.insertLinearProbing(key);
-        }
-        hashLinear.print();
-
-        // Test quadratic probing
-        cout << "\nTesting Quadratic Probing:" << endl;
-        Hashing<int> hashQuad(10);
-        for (int key : keys)
-        {
-            hashQuad.insertQuadraticProbing(key);
-        }
-        hashQuad.print();
-
-        // Test chaining
-        cout << "\nTesting Chaining:" << endl;
-        Hashing<int> hashChain(10);
-        for (int key : keys)
-        {
-            hashChain.insertChaining(key);
-        }
-        hashChain.printChaining();
+        cout << "F(" << n << ") = " << result;
+        cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
     }
 
-    // ========================================
-    // Test Balanced Parentheses
-    // ========================================
+    cout << "\n--- Custom Input ---" << endl;
+    cout << "Enter a Fibonacci position (0-90): ";
+    int custom_n;
+    cin >> custom_n;
+
+    if (custom_n >= 0 && custom_n <= 90)
     {
-        printHeader("BALANCED PARENTHESES CHECK");
+        start_time = high_resolution_clock::now();
+        long long result = matrix.fib_matrix(custom_n);
+        end_time = high_resolution_clock::now();
+        elapsed = end_time - start_time;
 
-        string expressions[] = {
-            "{[()]}",
-            "{[(])}",
-            "((()))",
-            "({[}])"};
+        cout << "F(" << custom_n << ") = " << result << endl;
+        printTime("Calculation time", elapsed.count());
 
-        for (const string &exp : expressions)
-        {
-            start_time = high_resolution_clock::now();
-            bool balanced = AreBalanced(exp);
-            end_time = high_resolution_clock::now();
-            elapsed = end_time - start_time;
-
-            cout << "Expression: " << exp << " - "
-                 << (balanced ? "Balanced" : "Not Balanced")
-                 << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
-        }
+        cout << "\nNote: Matrix exponentiation computes Fibonacci in O(log n) time!" << endl;
     }
-    // ========================================
-    // Test String Conversion Functions
-    // ========================================
+    else
     {
-        printHeader("STRING CONVERSION FUNCTIONS");
-
-        start_time = high_resolution_clock::now();
-        int num = stringToInt("12345");
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "stringToInt('12345') = " << num << endl;
-        printTime("String to Int conversion", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        string str = intToString(67890);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "intToString(67890) = '" << str << "'" << endl;
-        printTime("Int to String conversion", elapsed.count());
+        cout << "[ERROR] Please enter a value between 0 and 90." << endl;
     }
-    // ========================================
-    // test power function
-    {
-        printHeader("POWER FUNCTION");
-        cout << "Calculating power using recursion:" << endl;
-        int base = 2;
-        int p = 30; // Smaller values to avoid overflow
-        start_time = high_resolution_clock::now();
-        long long pow_result = power(base, p);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << base << " raised to the power of " << p << " is " << pow_result << endl;
-        printTime("Recursive Power", elapsed.count());
-
-        cout << "Calculating power using iterative method:" << endl;
-        start_time = high_resolution_clock::now();
-        long long pow_iterative_result = power_iterative(base, p);
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << base << " raised to the power of " << p << " is " << pow_iterative_result << endl;
-        printTime("Iterative Power", elapsed.count());
-    }
-    // ========================================
-    // Binary Tree
-    // ========================================
-    {
-        printHeader("BINARY TREE OPERATIONS");
-
-        BinaryTree<int> tree;
-
-        // Test insertion
-        cout << "\nInserting elements: 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65" << endl;
-        auto start_time = high_resolution_clock::now();
-        vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 65};
-        for (int val : values)
-        {
-            tree.insert(val);
-        }
-        auto end_time = high_resolution_clock::now();
-        duration<double, milli> elapsed = end_time - start_time;
-        printTime("Insert 11 elements", elapsed.count());
-
-        cout << "\nTree size: " << tree.size() << endl;
-        cout << "Tree height: " << tree.height(tree.getRoot()) << endl;
-        cout << "Is balanced: " << (tree.isBalanced(tree.getRoot()) ? "Yes" : "No") << endl;
-
-        // Print tree structure
-        cout << "\nTree structure:" << endl;
-        tree.print();
-
-        // Test traversals
-        cout << "\n--- Traversals ---" << endl;
-
-        start_time = high_resolution_clock::now();
-        vector<int> inorder = tree.inorder();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Inorder (L-Root-R): ";
-        for (int val : inorder)
-            cout << val << " ";
-        cout << endl;
-        printTime("Inorder traversal", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        vector<int> preorder = tree.preorder();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Preorder (Root-L-R): ";
-        for (int val : preorder)
-            cout << val << " ";
-        cout << endl;
-        printTime("Preorder traversal", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        vector<int> postorder = tree.postorder();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Postorder (L-R-Root): ";
-        for (int val : postorder)
-            cout << val << " ";
-        cout << endl;
-        printTime("Postorder traversal", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        vector<int> levelorder = tree.levelorder();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Level order (BFS): ";
-        for (int val : levelorder)
-            cout << val << " ";
-        cout << endl;
-        printTime("Level order traversal", elapsed.count());
-
-        // Test search
-        cout << "\n--- Search Operations ---" << endl;
-        int searchVals[] = {40, 100, 10};
-        for (int val : searchVals)
-        {
-            start_time = high_resolution_clock::now();
-            bool found = tree.search(val);
-            end_time = high_resolution_clock::now();
-            elapsed = end_time - start_time;
-            cout << "Searching for " << val << ": " << (found ? "Found" : "Not Found");
-            cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
-        }
-
-        // Test min/max
-        cout << "\n--- Min/Max Operations ---" << endl;
-        start_time = high_resolution_clock::now();
-        int minVal = tree.findMinValue();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Minimum value: " << minVal << endl;
-        printTime("Find minimum", elapsed.count());
-
-        start_time = high_resolution_clock::now();
-        int maxVal = tree.findMaxValue();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "Maximum value: " << maxVal << endl;
-        printTime("Find maximum", elapsed.count());
-
-        // Test counting
-        cout << "\n--- Node Counting ---" << endl;
-        cout << "Total nodes: " << tree.countNodes() << endl;
-        cout << "Leaf nodes: " << tree.countLeaves() << endl;
-        cout << "Internal nodes: " << tree.countInternalNodes() << endl;
-
-        // Test deletion
-        cout << "\n--- Deletion Operations ---" << endl;
-        int deleteVals[] = {20, 30, 50};
-        for (int val : deleteVals)
-        {
-            start_time = high_resolution_clock::now();
-            tree.deleteNode(val);
-            end_time = high_resolution_clock::now();
-            elapsed = end_time - start_time;
-            cout << "Deleted " << val;
-            cout << " (" << fixed << setprecision(6) << elapsed.count() << " ms)" << endl;
-        }
-
-        cout << "\nTree size after deletions: " << tree.size() << endl;
-        cout << "Tree height after deletions: " << tree.height(tree.getRoot()) << endl;
-
-        cout << "\nTree structure after deletions:" << endl;
-        tree.print();
-
-        cout << "\nInorder after deletions: ";
-        inorder = tree.inorder();
-        for (int val : inorder)
-            cout << val << " ";
-        cout << endl;
-
-        // Test clear
-        start_time = high_resolution_clock::now();
-        tree.clear();
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        cout << "\nCleared tree" << endl;
-        printTime("Clear tree", elapsed.count());
-        cout << "Tree is empty: " << (tree.is_empty() ? "Yes" : "No") << endl;
-
-        // Performance test with larger dataset
-        cout << "\n--- Performance Test ---" << endl;
-        BinaryTree<int> perfTree;
-
-        start_time = high_resolution_clock::now();
-        for (int i = 0; i < 1000; i++)
-        {
-            perfTree.insert(rand() % 10000);
-        }
-        end_time = high_resolution_clock::now();
-        elapsed = end_time - start_time;
-        printTime("Insert 1000 random elements", elapsed.count());
-
-        cout << "Final tree size: " << perfTree.size() << endl;
-        cout << "Final tree height: " << perfTree.height(perfTree.getRoot()) << endl;
-        cout << "Is balanced: " << (perfTree.isBalanced(perfTree.getRoot()) ? "Yes" : "No") << endl;
-    }
-    // ========================================
-    // Summary
-    // ========================================
-    printHeader("ALL TESTS COMPLETED");
-    cout << "All data structures and algorithms have been tested successfully!" << endl;
-    cout << string(60, '=') << "\n"
-         << endl;
-
-    // closing the output file of sorting algorithms
-    outFile.close();
-
-    return 0;
 }
