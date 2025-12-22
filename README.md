@@ -451,20 +451,6 @@ If you want to help prioritize, open an issue or start a discussion.
 
 ---
 
-## License
-
-This repository does not include a LICENSE file by default unless one is present. To allow reuse, it's recommended to add a license. A common choice for educational repos is the MIT License.
-
-To add MIT license, create a `LICENSE` file with the MIT text and add a license badge to this README:
-
-```markdown
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-```
-
-If you prefer a different license (Apache 2.0, BSD-3-Clause, etc.), add the appropriate LICENSE file and update the README badges.
-
----
-
 ## Contact & acknowledgements
 
 Maintainer: Mohammed-Bahr
@@ -473,7 +459,3 @@ If you have questions, open an issue, or send a PR. For larger discussions, cons
 
 Acknowledgements:
 - Many algorithm ideas and implementations are adapted from standard textbooks, competitive programming resources, and open educational projects. Individual files should contain attributions and references where appropriate.
-
----
-
-Thank you for visiting DS-Algorithms — contributions and improvements are highly appreciated. Happy coding and learning!
