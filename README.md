@@ -26,7 +26,6 @@ This repository is intended as a learning resource, reference, and playground fo
 - [Contributing](#contributing)
 - [Issue & PR process](#issue--pr-process)
 - [Roadmap](#roadmap)
-- [License](#license)
 - [Contact & acknowledgements](#contact--acknowledgements)
 
 ---
