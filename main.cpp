@@ -173,6 +173,46 @@ public:
     ~Queue() { clear(); }
 };
 
+
+
+//======================================================================
+// Priority Queue
+//======================================================================
+class PriorityQueue
+{
+private:
+    MaxHeap heap;
+    unordered_map<int, queue<int>> Values_Map;
+
+public:
+    void insert(int value, int priority)
+    {
+        heap.insert(priority);
+        Values_Map[priority].push(value);
+    }
+
+    pair<int, int> extractHighestPriority()
+    {
+        if (heap.isEmpty())
+            cout << "Queue is empty!";
+
+        int highestPriority = heap.ExtractMax();
+        int value = Values_Map[highestPriority].front();
+        Values_Map[highestPriority].pop();
+
+        if (Values_Map[highestPriority].empty())
+            Values_Map.erase(highestPriority);
+
+        return {value, highestPriority};
+    }
+
+    bool isEmpty()
+    {
+        return heap.isEmpty();
+    }
+};
+
+
 //======================================================================
 // sorting algorthims
 //======================================================================
@@ -1796,44 +1836,6 @@ public:
         return maxValue;
     }
 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Priority Queue
-class PriorityQueue
-{
-private:
-    MaxHeap heap;
-    unordered_map<int, queue<int>> Values_Map;
-
-public:
-    void insert(int value, int priority)
-    {
-        heap.insert(priority);
-        Values_Map[priority].push(value);
-    }
-
-    pair<int, int> extractHighestPriority()
-    {
-        if (heap.isEmpty())
-            cout << "Queue is empty!";
-
-        int highestPriority = heap.ExtractMax();
-        int value = Values_Map[highestPriority].front();
-        Values_Map[highestPriority].pop();
-
-        if (Values_Map[highestPriority].empty())
-            Values_Map.erase(highestPriority);
-
-        return {value, highestPriority};
-    }
-
-    bool isEmpty()
-    {
-        return heap.isEmpty();
-    }
-};
-
 
 
 
