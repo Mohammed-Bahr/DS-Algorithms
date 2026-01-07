@@ -1853,7 +1853,8 @@ void testPowerFunction();
 void testBinaryTree();
 void testFibonacci();
 void displayMenu();
-
+void TestMaxHeap();
+void TestPriorityQueue();
 int main()
 {
     srand(static_cast<unsigned>(time(nullptr)));
@@ -1917,6 +1918,13 @@ int main()
         case 11:
             testFibonacci();
             break;
+        case 12:
+            TestMaxHeap();
+            break;
+        case 13:
+            TestPriorityQueue();
+            break;
+        
         case 0:
             running = false;
             printHeader("PROGRAM TERMINATED");
@@ -1953,6 +1961,8 @@ void displayMenu()
     cout << " 9.  Test Power Functions" << endl;
     cout << " 10. Test Binary Tree Operations" << endl;
     cout << " 11. Test Fibonacci (Matrix Method)" << endl;
+    cout << " 12. Test Max Heap Operations" << endl;
+    cout << " 13. Test Priority Queue Operations" << endl;
     cout << " 0.  Exit Program" << endl;
     cout << string(70, '-') << endl;
 }
@@ -2435,4 +2445,79 @@ void testFibonacci()
     {
         cout << "[ERROR] Please enter a value between 0 and 90." << endl;
     }
+}
+
+
+
+
+
+void TestMaxHeap()
+{
+    printHeader("MAX HEAP OPERATIONS");
+
+    MaxHeap maxHeap;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    cout << "\nInserting elements into Max Heap: ";
+    for (int i = 10; i >= 1; i--)
+    {
+        cout << i << " ";
+        maxHeap.insert(i);
+    }
+    cout << endl;
+
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert 10 elements", elapsed.count());
+
+    cout << "\nMax Heap structure:\n";
+    maxHeap.displayTree();
+
+    start_time = high_resolution_clock::now();
+    int maxElement = maxHeap.ExtractMax();
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << "\nExtracted Max Element: " << maxElement << endl;
+    printTime("Extract Max", elapsed.count());
+
+    cout << "\nMax Heap after extraction:\n";
+    maxHeap.displayTree();
+}   
+
+
+void TestPrioriyQueue()
+{
+    printHeader("PRIORITY QUEUE OPERATIONS USING MAX HEAP");
+
+    MaxHeap priorityQueue;
+    auto start_time = high_resolution_clock::now();
+    auto end_time = high_resolution_clock::now();
+    duration<double, milli> elapsed;
+
+    cout << "\nInserting elements into Priority Queue: ";
+    for (int i = 15; i >= 1; i--)
+    {
+        cout << i << " ";
+        priorityQueue.insert(i);
+    }
+    cout << endl;
+
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    printTime("Insert 15 elements", elapsed.count());
+
+    cout << "\nPriority Queue structure:\n";
+    priorityQueue.displayTree();
+
+    start_time = high_resolution_clock::now();
+    int maxElement = priorityQueue.ExtractMax();
+    end_time = high_resolution_clock::now();
+    elapsed = end_time - start_time;
+    cout << "\nExtracted Max Element: " << maxElement << endl;
+    printTime("Extract Max", elapsed.count());
+
+    cout << "\nPriority Queue after extraction:\n";
+    priorityQueue.displayTree();
 }
