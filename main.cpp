@@ -2447,10 +2447,6 @@ void testFibonacci()
     }
 }
 
-
-
-
-
 void TestMaxHeap()
 {
     printHeader("MAX HEAP OPERATIONS");
@@ -2486,8 +2482,7 @@ void TestMaxHeap()
     maxHeap.displayTree();
 }   
 
-
-void TestPrioriyQueue()
+void TestPriorityQueue()
 {
     printHeader("PRIORITY QUEUE OPERATIONS USING MAX HEAP");
 
