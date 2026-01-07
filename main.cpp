@@ -1664,7 +1664,7 @@ struct HNode{
 
 class MaxHeap{
     
-}
+};
 
 
 
