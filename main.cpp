@@ -1652,18 +1652,186 @@ public:
     }
 };
 //======================================================================
-// Heap Tree
+// Max Heap implementation
+class MaxHeap
+{
+private:
+    vector<int> heap;
 
-template <class T>
-struct HNode{
-    T data;
-    HNode *left;
-    HNode *right;
-    HNode () : left(nullptr) , right(nullptr) {}
+    int parent(int i) { return (i - 1) / 2; }
+    int leftChild(int i) { return 2 * i + 1; }
+    int rightChild(int i) { return 2 * i + 2; }
+
+    void heapifyUp(int i)
+    {
+        while (i > 0 && heap[parent(i)] < heap[i])
+        {
+            swap(heap[i], heap[parent(i)]);
+            i = parent(i);
+        }
+    }
+
+    void heapifyDown(int i)
+    {
+        int largest = i;
+        int left = leftChild(i);
+        int right = rightChild(i);
+
+        if (left < heap.size() && heap[left] > heap[largest])
+            largest = left;
+
+        if (right < heap.size() && heap[right] > heap[largest])
+            largest = right;
+
+        if (largest != i)
+        {
+            swap(heap[i], heap[largest]);
+            heapifyDown(largest);
+        }
+    }
+
+public:
+    void insert(int value)
+    {
+        heap.push_back(value);
+        heapifyUp(heap.size() - 1);
+    }
+
+    int ExtractMin()
+    {
+        if (heap.empty())
+            throw runtime_error("Heap is empty!");
+
+        int leaf_start = heap.size() / 2;
+
+        int index = leaf_start;
+
+        for (int i = leaf_start; i < heap.size(); i++)
+            if (heap[i] < heap[index])
+                index = i;
+
+        int min_val = heap[index];
+
+        heap[index] = heap.back();
+        heap.pop_back();
+
+        return min_val;
+    }
+
+
+    bool isEmpty()
+    {
+        return heap.empty();
+    }
+
+    int size()
+    {
+        return heap.size();
+    }
+
+    void display()
+    {
+        if (heap.empty())
+        {
+            cout << "Heap is empty!" << endl;
+            return;
+        }
+
+        for (int val : heap)
+            cout << val << " ";
+        cout << endl;
+    }
+
+    int getLevels(int n)
+    {
+        if (n == 0)
+            return 0;
+        return floor(log2(n)) + 1;
+    }
+
+    void displayTree()
+    {
+        if (heap.empty())
+        {
+            cout << "Heap is empty!" << endl;
+            return;
+        }
+
+        int n = heap.size();
+        int totalLevels = 1 + log2(n);
+
+        int index = 0;
+
+        for (int level = 0; level < totalLevels; level++)
+        {
+            int nodesInLevel = 1 << level;
+            int spaces = (1 << (totalLevels - level));
+
+            for (int s = 0; s < spaces; s++)
+                cout << " ";
+
+            for (int j = 0; j < nodesInLevel && index < n; j++, index++)
+            {
+                cout << heap[index];
+
+                for (int s = 0; s < (1 << (totalLevels - level + 1)); s++)
+                    cout << " ";
+            }
+            cout << "\n\n";
+        }
+    }
+
+    int ExtractMax()
+    {
+        if (heap.empty())
+            throw runtime_error("Heap is empty!");
+
+        int maxValue = heap[0];
+        heap[0] = heap.back();
+        heap.pop_back();
+
+        if (!heap.empty())
+            heapifyDown(0);
+
+        return maxValue;
+    }
 };
 
-class MaxHeap{
-    
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Priority Queue
+class PriorityQueue
+{
+private:
+    MaxHeap heap;
+    unordered_map<int, queue<int>> Values_Map;
+
+public:
+    void insert(int value, int priority)
+    {
+        heap.insert(priority);
+        Values_Map[priority].push(value);
+    }
+
+    pair<int, int> extractHighestPriority()
+    {
+        if (heap.isEmpty())
+            cout << "Queue is empty!";
+
+        int highestPriority = heap.ExtractMax();
+        int value = Values_Map[highestPriority].front();
+        Values_Map[highestPriority].pop();
+
+        if (Values_Map[highestPriority].empty())
+            Values_Map.erase(highestPriority);
+
+        return {value, highestPriority};
+    }
+
+    bool isEmpty()
+    {
+        return heap.isEmpty();
+    }
 };
 
 
