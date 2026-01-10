@@ -55,6 +55,7 @@ This is a suggested, conventional layout used by the repo. If the repo currently
   - /stack
   - /queue
   - /heap
+  - /Max heap
   - /tree
   - /hash
 - /examples
