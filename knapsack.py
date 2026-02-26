@@ -9,6 +9,7 @@ class Knapsack(Scene):
     def construct(self):
 
 
+
         knapsack = ImageMobject("knapsack.png").to_edge(DOWN).scale(0.8).shift(DOWN*0.4).set_z_index(1)
         self.play(GrowFromCenter(knapsack))
         self.wait(2)
