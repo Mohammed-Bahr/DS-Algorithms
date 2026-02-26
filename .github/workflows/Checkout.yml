@@ -1,0 +1,23 @@
+name: Checkout on Push
+
+on:
+  push:
+    branches:
+      - '**'  # Triggers on push to any branch
+
+jobs:
+  checkout:
+    name: Checkout Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Confirm Checkout
+        run: |
+          echo "✅ Code checked out successfully!"
+          echo "📁 Repository: ${{ github.repository }}"
+          echo "🌿 Branch: ${{ github.ref_name }}"
+          echo "📝 Commit: ${{ github.sha }}"
+          ls -la  # List files to confirm checkout
