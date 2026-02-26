@@ -3,7 +3,7 @@ name: Checkout on Push
 on:
   push:
     branches:
-      - '**'  # Triggers on push to any branch
+      - master
 
 jobs:
   checkout:
