@@ -1,5 +1,6 @@
 #include "bits/stdc++.h"
 #include <cstring>
+#include <stdexcept>  // for runtime_error, invalid_argument
 using namespace std;
 using namespace std::chrono;
 
@@ -40,7 +41,7 @@ public:
     {
         if (is_empty())
         {
-            cout << ("Stack is empty");
+            throw runtime_error("Stack is empty");
         }
         return top->value;
     }
@@ -50,6 +51,7 @@ public:
         if (is_empty())
         {
             cout << "Stack is already empty ." << endl;
+            return;
         }
         StackNode<T> *newnode = top;
         top = top->point;
@@ -98,9 +100,9 @@ struct node
     T data;
     node<T> *next;
 
-    node<T>() : next(nullptr) {}
+    node() : next(nullptr) {}
 };
-template <class T>
+template <class T> 
 class Queue
 {
 private:
@@ -168,50 +170,15 @@ public:
         cout << endl;
     }
 
-    T first() { return front->data; }
+    T first()
+    {
+        if (is_empty())
+            throw runtime_error("Queue is empty");
+        return front->data;
+    }
 
     ~Queue() { clear(); }
 };
-
-
-
-//======================================================================
-// Priority Queue
-//======================================================================
-class PriorityQueue
-{
-private:
-    MaxHeap heap;
-    unordered_map<int, queue<int>> Values_Map;
-
-public:
-    void insert(int value, int priority)
-    {
-        heap.insert(priority);
-        Values_Map[priority].push(value);
-    }
-
-    pair<int, int> extractHighestPriority()
-    {
-        if (heap.isEmpty())
-            cout << "Queue is empty!";
-
-        int highestPriority = heap.ExtractMax();
-        int value = Values_Map[highestPriority].front();
-        Values_Map[highestPriority].pop();
-
-        if (Values_Map[highestPriority].empty())
-            Values_Map.erase(highestPriority);
-
-        return {value, highestPriority};
-    }
-
-    bool isEmpty()
-    {
-        return heap.isEmpty();
-    }
-};
-
 
 //======================================================================
 // sorting algorthims
@@ -441,7 +408,7 @@ int random_partition(int arr[], int low, int high)
     swap(arr[randomIndex], arr[high]); // Move random pivot to end
     return partition(arr, low, high);  // Use existing partition function
 }
-static int counter_for_printing = 0;
+
 void random_quickSort(int arr[], int low, int high)
 {
     if (low < high)
@@ -558,12 +525,8 @@ void CountingSort(int arr[], const int n)
     for (int i = 0; i < n; i++)
         maxval = max(maxval, arr[i]);
     int newSize = maxval + 1;
-    int countArr[newSize] = {0};
-    int res[n];
-
-    // for(int i = 0; i < newSize; i++){
-    //     countArr[i] = 0;
-    // }
+    vector<int> countArr(newSize, 0);
+    vector<int> res(n);
 
     for (int i = 0; i < n; i++)
     {
@@ -609,10 +572,9 @@ int getMax(int arr[], int n)
 // represented by exp.
 void countSort(int arr[], int n, int exp)
 {
-
-    // Output array
-    int output[n];
-    int i, count[10] = {0};
+    vector<int> output(n);
+    int i;
+    int count[10] = {0};
 
     // Store count of occurrences
     // in count[]
@@ -671,10 +633,10 @@ int stringToInt(const string &str)
 {
     int result = 0;
     bool isNegative = false;
-    int i = 0;
+    size_t i = 0;
 
     // Handle negative numbers
-    if (str[0] == '-')
+    if (!str.empty() && str[0] == '-')
     {
         isNegative = true;
         i = 1;
@@ -1230,7 +1192,6 @@ long long power_iterative(int num, int p)
     return result;
 }
 
-
 //======================================================================
 // Implement the Fibonacci series using divide and conquer (matrix multiplication)
 
@@ -1255,15 +1216,15 @@ struct Matrix
         result.M[1][1] = M[1][0] * other.M[0][1] + M[1][1] * other.M[1][1];
         return result;
     }
-    
+
     Matrix Rec_matrix(Matrix base, long long n)
     {
         if (n == 1)
             return base;
-    
+
         Matrix half = Rec_matrix(base, n / 2);
-        Matrix result ;
-    
+        Matrix result;
+
         if (n % 2 == 1) // in case n is odd number
         {
             result = half * half;
@@ -1275,7 +1236,7 @@ struct Matrix
         }
         return result;
     }
-    
+
     int fib_matrix(long long n)
     {
         if (n < 0)
@@ -1284,12 +1245,11 @@ struct Matrix
             return 0;
         if (n == 1)
             return 1;
-    
+
         --n;
         Matrix base;
         Matrix result = Rec_matrix(base, n);
-    
-    
+
         return result.M[0][0];
     }
 };
@@ -1716,11 +1676,12 @@ private:
         int largest = i;
         int left = leftChild(i);
         int right = rightChild(i);
+        int n = static_cast<int>(heap.size());
 
-        if (left < heap.size() && heap[left] > heap[largest])
+        if (left < n && heap[left] > heap[largest])
             largest = left;
 
-        if (right < heap.size() && heap[right] > heap[largest])
+        if (right < n && heap[right] > heap[largest])
             largest = right;
 
         if (largest != i)
@@ -1742,11 +1703,12 @@ public:
         if (heap.empty())
             throw runtime_error("Heap is empty!");
 
-        int leaf_start = heap.size() / 2;
+        int leaf_start = static_cast<int>(heap.size()) / 2;
+        int n = static_cast<int>(heap.size());
 
         int index = leaf_start;
 
-        for (int i = leaf_start; i < heap.size(); i++)
+        for (int i = leaf_start; i < n; i++)
             if (heap[i] < heap[index])
                 index = i;
 
@@ -1757,7 +1719,6 @@ public:
 
         return min_val;
     }
-
 
     bool isEmpty()
     {
@@ -1838,6 +1799,43 @@ public:
 };
 
 
+//======================================================================
+// Priority Queue
+//======================================================================
+
+class PriorityQueue
+{
+private:
+    MaxHeap heap;
+    unordered_map<int, queue<int>> Values_Map;
+
+public:
+    void insert(int value, int priority)
+    {
+        heap.insert(priority);
+        Values_Map[priority].push(value);
+    }
+
+    pair<int, int> extractHighestPriority()
+    {
+        if (heap.isEmpty())
+            cout << "Queue is empty!";
+
+        int highestPriority = heap.ExtractMax();
+        int value = Values_Map[highestPriority].front();
+        Values_Map[highestPriority].pop();
+
+        if (Values_Map[highestPriority].empty())
+            Values_Map.erase(highestPriority);
+
+        return {value, highestPriority};
+    }
+
+    bool isEmpty()
+    {
+        return heap.isEmpty();
+    }
+};
 
 ////======================================================================
 // Function prototypes for menu operations
@@ -1924,7 +1922,7 @@ int main()
         case 13:
             TestPriorityQueue();
             break;
-        
+
         case 0:
             running = false;
             printHeader("PROGRAM TERMINATED");
@@ -1942,12 +1940,17 @@ int main()
         }
     }
 
+    // close output file if it was opened
+    if (outFile.is_open())
+        outFile.close();
+
     return 0;
 }
 
 void displayMenu()
 {
-    cout << "\n" << string(70, '-') << endl;
+    cout << "\n"
+         << string(70, '-') << endl;
     cout << "                           MAIN MENU" << endl;
     cout << string(70, '-') << endl;
     cout << " 1.  Test Stack Operations" << endl;
@@ -2118,7 +2121,8 @@ void testSortingAlgorithms()
     int arr1[n], arr2[n], arr3[n], arr4[n], arr5[n];
     int arr6[n], arr7[n], arr8[n], arr9[n], arr10[n];
 
-    cout << "\nArray size: " << n << " elements\n" << endl;
+    cout << "\nArray size: " << n << " elements\n"
+         << endl;
 
     // Selection Sort
     memcpy(arr1, arr, sizeof(arr));
@@ -2224,7 +2228,8 @@ void testBinarySearch()
 
     cout << "Searching for 50 in sorted array (0, 2, 4, ..., 198)..." << endl;
     cout << "Found at index: " << index << endl;
-    cout << "Value at index: " << sorted_arr[index] << endl;
+    if (index >= 0 && index < 100)
+        cout << "Value at index: " << sorted_arr[index] << endl;
     printTime("Binary Search", elapsed.count());
 }
 
@@ -2409,7 +2414,8 @@ void testFibonacci()
     auto end_time = high_resolution_clock::now();
     duration<double, milli> elapsed;
 
-    cout << "Computing Fibonacci numbers using matrix exponentiation:\n" << endl;
+    cout << "Computing Fibonacci numbers using matrix exponentiation:\n"
+         << endl;
 
     vector<int> test_values = {5, 10, 15, 20, 30, 40, 50};
 
@@ -2480,7 +2486,7 @@ void TestMaxHeap()
 
     cout << "\nMax Heap after extraction:\n";
     maxHeap.displayTree();
-}   
+}
 
 void TestPriorityQueue()
 {
